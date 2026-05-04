@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block content %}
+<div class="row mt-4">
+    <div class="col-12">
+        <h2 class="text-theme-primary mb-3">Bienvenue sur votre espace, {{ session['nom'] }} {{ session['prenom'] }} !</h2>
+        <div class="alert alert-info shadow-sm">
+            Votre rôle actuel dans le système : <strong>{{ role }}</strong>
+        </div>
+        <hr class="mt-4 mb-4">
+    </div>
+</div>
+
+<div class="row justify-content-center">
+   {% if session['role'] in ['Admin', 'Directeur', 'Chef de service'] %}
+    <div class="col-12 col-md-6 col-lg-3 mb-4">
+        <div class="card shadow-sm h-100 border-0" style="border-top: 4px solid var(--logo-primary) !important;">
+            <div class="card-body text-center">
+                <div class="display-6 mb-3">⚙️</div>
+                <h5 class="card-title fw-bold">Administration</h5>
+                <p class="card-text text-muted small">Gérer les utilisateurs, les rôles et les paramètres globaux du système.</p>
+                <a href="{{ url_for('gestion_utilisateurs') }}" class="btn btn-outline-dark w-100 mt-auto">Gérer les utilisateurs</a>
+            </div>
+   
+        </div>
+    </div>
+    {% endif %}
+    {% if session['role'] in ['Admin', 'Directeur', 'Chef de service'] %}
+    <div class="col-12 col-md-6 col-lg-3 mb-4">
+        <div class="card shadow-sm h-100 border-0" style="border-top: 4px solid var(--logo-primary) !important;">
+            <div class="card-body text-center">
+                <div class="display-6 mb-3">📂</div>
+                <h5 class="card-title fw-bold">Historique des OM</h5>
+                <p class="card-text text-muted small">Consulter, imprimer ou supprimer l'historique complet des ordres de mission.</p>
+                <a href="{{ url_for('liste_om') }}" class="btn btn-outline-dark w-100 mt-auto">Consulter les OM</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if session['role'] in ['Admin', 'Directeur'] or (session['role'] == 'Chef de service' and session['service'] == 'Affaires Administratives et Financières') %}  
+    <div class="col-12 col-md-6 col-lg-3 mb-4">
+        <div class="card shadow-sm h-100 border-0" style="border-top: 4px solid #da9516 !important;">
+            <div class="card-body text-center">
+                <div class="display-6 mb-3">💰</div>
+                <h5 class="card-title fw-bold">Gestion financière</h5>
+                <p class="card-text text-muted small">Traiter les dossiers en attente, Éditer les états de frais et valider les paiements.</p>
+                <a href="{{ url_for('espace_finance') }}" class="btn btn-outline-dark w-100 mt-auto">Gérer les remboursements</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if role == 'Admin' or role == 'Chef de service' %}
+    <div class="col-12 col-md-6 col-lg-3 mb-4">
+        <div class="card shadow-sm h-100 border-0" style="border-top: 4px solid #198754 !important;">
+            <div class="card-body text-center">
+                <div class="display-6 mb-3">📝</div>
+                <h5 class="card-title fw-bold text-success">Nouvel OM</h5>
+                <p class="card-text text-muted small">Saisir les données d'un nouvel ordre de mission (Destination, Date...).</p>
+                <a href="{{ url_for('creer_om') }}" class="btn btn-success w-100 mt-auto">Créer un OM</a>
+            </div>
+        </div>
+    </div>
+    
+    {% endif %}
+
+{% if session['role'] == 'Chef de parc' %}
+<div class="col-md-8 mb-8">
+    <div class="card h-100 shadow-sm border-warning " style="border-top: 4px solid #ffc107; margin-left: 25%; margin-right: 25%;">
+        <div class="card-body text-center d-flex flex-column">
+            <h1 class="display-4 mb-3">🚗</h1>
+            <h4 class="card-title fw-bold text-warning">Gestion du Parc</h4>
+            <p class="card-text text-muted mb-4">Gérer les départs, les retours et l'assignation des véhicules aux missions.</p>
+            
+            <a href="{{ url_for('gestion_parc') }}" class="btn btn-warning w-100 mt-auto fw-bold text-dark shadow-sm">
+                <i class="fas fa-tasks me-2"></i> Accéder à l'espace de gestion
+            </a>
+            
+        </div>
+    </div>
+</div>
+{% endif %}
+{% if session['role'] == 'Financière' %}
+<div class="col-md-8 mb-8">
+    <div class="card h-100 shadow-sm border-warning " style="border-top: 4px solid #ffc107; margin-left: 25%; margin-right: 25%;">
+        <div class="card-body text-center d-flex flex-column">
+            <h1 class="display-4 mb-3">💰</h1>
+            <h4 class="card-title fw-bold text-warning">Gestion financière</h4>
+            <p class="card-text text-muted mb-4">Traiter les dossiers en attente, Éditer les états de frais et valider les paiements.</p>
+            
+            <a href="{{ url_for('espace_finance') }}" class="btn btn-warning w-100 mt-auto fw-bold text-dark shadow-sm">
+                <i class="fas fa-tasks me-2"></i> Gérer les remboursements
+            </a>
+            
+        </div>
+    </div>
+</div>
+{% endif %}
+</div>
+{% endblock %}

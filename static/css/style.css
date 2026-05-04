@@ -1,0 +1,76 @@
+/* --- VARIABLES DES COULEURS DU LOGO --- */
+:root {
+    /* Remplace par la couleur DOMINANTE de ton logo (ex: Bleu foncé) */
+    --logo-primary: #1A365D; 
+    
+    /* Remplace par la couleur SECONDAIRE de ton logo (ex: Doré, Orange ou Vert) */
+    --logo-secondary: #E28743; 
+    
+    /* Couleur de fond de la page (très clair pour faire ressortir la carte) */
+    --bg-color: #F8FAFC; 
+}
+
+/* --- STYLE DE LA PAGE --- */
+body {
+    background-color: var(--bg-color);
+}
+
+/* Centrage parfait de la page de login */
+.login-wrapper {
+    max-width: 450px;
+    margin: 4rem auto; /* Centre horizontalement et ajoute de l'espace en haut/bas */
+}
+
+/* --- STYLE DU LOGO --- */
+.login-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: cover; /* Garde les proportions */
+    border: 4px solid white; /* Jolie bordure blanche autour du cercle */
+    background-color: white; /* Au cas où ton logo a de la transparence */
+}
+.menu-logo {
+    width: 45px;
+    height: 45px;
+    object-fit: cover; /* Garde les proportions */
+    border: 2px solid white; /* Jolie bordure blanche autour du cercle */
+    background-color: white; /* Au cas où ton logo a de la transparence */
+}
+
+/* --- TEXTE ET COULEURS --- */
+.text-theme-primary {
+    color: var(--logo-primary);
+}
+
+/* --- STYLE DE LA CARTE (Conteneur) --- */
+.login-card {
+    border-radius: 1rem; /* Bords bien arrondis, plus moderne */
+}
+
+/* --- STYLE DES BOUTONS --- */
+.btn-theme {
+    background-color: var(--logo-primary);
+    border-color: var(--logo-primary);
+    color: white;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-theme:hover {
+    background-color: var(--logo-secondary);
+    border-color: var(--logo-secondary);
+    color: white; /* Assure-toi que le texte reste lisible avec la couleur secondaire */
+    transform: translateY(-2px); /* Petit effet de soulèvement au survol */
+}
+
+/* --- STYLE DES CHAMPS DE SAISIE (Inputs) --- */
+.form-control:focus {
+    border-color: var(--logo-primary);
+    box-shadow: 0 0 0 0.25rem rgba(26, 54, 93, 0.25); /* Ombre de la couleur du logo */
+    background-color: white !important;
+}
+
+.input-group-text {
+    color: var(--logo-primary);
+}

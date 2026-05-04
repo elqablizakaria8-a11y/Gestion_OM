@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier Utilisateur{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+        <div class="card shadow border-0" style="border-top: 4px solid #ffc107 !important;">
+            <div class="card-header bg-white pb-0">
+                <h3 class="text-theme-primary"><i class="fas fa-user-edit text-warning me-2"></i>Modifier le Profil</h3>
+            </div>
+            <div class="card-body p-4">
+                
+                <form action="{{ url_for('modifier_utilisateur', doti=user.doti) }}" method="POST">
+                    
+                    <div class="alert alert-warning mb-4 shadow-sm">
+                        <i class="fas fa-info-circle me-2"></i> Le DOTI (<strong>{{ user.doti }}</strong>) est l'identifiant unique et ne peut pas être modifié.
+                    </div>
+
+                    <h5 class="text-muted mb-3 border-bottom pb-2">Identité Administrative</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Nom</label>
+                            <input type="text" name="nom" class="form-control" value="{{ user.nom }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Prénom</label>
+                            <input type="text" name="prenom" class="form-control" value="{{ user.prenom }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">CIN</label>
+                            <input type="text" name="cin" class="form-control" value="{{ user.cin }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Échelle</label>
+                            <input type="text" name="echelle" class="form-control" value="{{ user.echelle }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Grade</label>
+                            <input type="text" name="grade" class="form-control" value="{{ user.grade }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Service d'affectation</label>
+                            <select name="service_affectation" class="form-select border-primary" required>
+                                {% for s in services %}
+                                    <option value="{{ s }}" {% if user.service_affectation == s or (est_chef and services|length == 1) %}selected{% endif %}>{{ s }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <h5 class="text-muted mb-3 border-bottom pb-2 mt-4">Informations Bancaires</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Nom de la Banque</label>
+                            <input type="text" name="banque" class="form-control border-success" value="{{ user.banque if user.banque else '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">N° de Compte / RIB</label>
+                            <input type="text" name="rib" class="form-control border-success" value="{{ user.rib if user.rib else '' }}">
+                        </div>
+                    </div>
+                    <h5 class="text-muted mb-3 border-bottom pb-2">Accès au Système</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Rôle dans l'application</label>
+                            <select name="role" id="select-role" class="form-select" required onchange="gererMotDePasse()">
+                                {% if not est_chef %}
+                                    <option value="Admin" {% if user.role == 'Admin' %}selected{% endif %}>Administrateur</option>
+                                    <option value="Directeur" {% if user.role == 'Directeur' %}selected{% endif %}>Directeur</option>
+                                    <option value="Chef de service" {% if user.role == 'Chef de service' %}selected{% endif %}>Chef de Service</option>
+                                    <option value="Chef de parc" {% if user.role == 'Chef de parc' %}selected{% endif %}>Chef de Parc Auto</option>
+                                {% endif %}
+                                <!-- <option value="Employé" {% if user.role == 'Employé' %}selected{% endif %}>Employé standard</option> -->
+                                <option value="Aucun" {% if user.role == 'Aucun' %}selected{% endif %}>Simple Fonctionnaire (Aucun accès)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Mot de passe</label>
+                            <input type="text" name="password" id="input-password" class="form-control border-secondary" autocomplete="off">
+                            <div class="form-text" id="password-help">Remplissez uniquement pour réinitialiser le mot de passe, ou pour donner l'accès à un simple fonctionnaire.</div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <a href="{{ url_for('gestion_utilisateurs') }}" class="btn btn-outline-secondary me-2">Annuler</a>
+                        <button type="submit" class="btn btn-warning fw-bold text-dark"><i class="fas fa-save me-2"></i>Mettre à jour</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div><script>
+function gererMotDePasse() {
+    var role = document.getElementById('select-role').value;
+    var pwd = document.getElementById('input-password');
+    var help = document.getElementById('password-help');
+    
+    if (role === 'Aucun') {
+        pwd.disabled = true;
+        pwd.value = "";
+        pwd.placeholder = "Pas d'accès, pas de mot de passe.";
+        help.innerText = "Cet utilisateur n'aura plus d'accès à la plateforme.";
+    } else {
+        pwd.disabled = false;
+        pwd.placeholder = "Laisser vide pour ne rien changer";
+        help.innerText = "Laissez vide si vous ne voulez pas modifier son mot de passe actuel. Obligatoire si vous venez de lui donner un accès.";
+    }
+}
+// Exécution au chargement de la page pour initialiser le bon état
+document.addEventListener("DOMContentLoaded", gererMotDePasse);
+</script>
+
+{% endblock %}

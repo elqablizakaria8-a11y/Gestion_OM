@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Ajouter un Utilisateur{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+        <div class="card shadow border-0" style="border-top: 4px solid var(--logo-primary) !important;">
+            <div class="card-header bg-white pb-0">
+                <h3 class="text-theme-primary"><i class="fas fa-user-plus me-2"></i>Nouveau Profil</h3>
+            </div>
+            <div class="card-body p-4">
+                
+                <form action="{{ url_for('ajouter_utilisateur') }}" method="POST">
+                    
+                    <h5 class="text-muted mb-3 border-bottom pb-2">Identité Administrative</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">DOTI</label>
+                            <input type="text" name="doti" class="form-control border-primary" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Nom</label>
+                            <input type="text" name="nom" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Prénom</label>
+                            <input type="text" name="prenom" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">CIN</label>
+                            <input type="text" name="cin" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Échelle</label>
+                            <input type="text" name="echelle" class="form-control" required>
+                        </div>
+
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Grade</label>
+                            <input type="text" name="grade" class="form-control" placeholder="Ex: Administrateur 2ème grade" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Service d'affectation</label>
+                            <select name="service_affectation" class="form-select border-primary" required>
+                                {% if not est_chef %}
+                                    <option value="" disabled selected>Choisir un service...</option>
+                                {% endif %}
+                                {% for s in services %}
+                                    <option value="{{ s }}" {% if est_chef or services|length == 1 %}selected{% endif %}>{{ s }}</option>
+                                {% endfor %}
+                            </select>
+                            {% if est_chef %}
+                                <div class="form-text text-success"><i class="fas fa-lock me-1"></i>Verrouillé sur votre service.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <h5 class="text-muted mb-3 border-bottom pb-2 mt-4">Informations Bancaires</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Nom de la Banque</label>
+                            <input type="text" name="banque" class="form-control border-success" placeholder="Ex: Attijariwafa Bank">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">N° de Compte / RIB</label>
+                            <input type="text" name="rib" class="form-control border-success" placeholder="Les 24 chiffres du RIB">
+                        </div>
+                    </div>
+                   <h5 class="text-muted mb-3 border-bottom pb-2">Accès au Système</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Rôle dans l'application</label>
+                            <select name="role" id="select-role" class="form-select" required onchange="gererMotDePasse()">
+                                {% if not est_chef %}
+                                    <option value="Admin">Administrateur</option>
+                                    <option value="Directeur">Directeur</option>
+                                    <option value="Chef de service">Chef de Service</option>
+                                    <option value="Chef de parc">Chef de Parc Auto</option>
+                                    <option value="Financière">Service Financier</option>
+                                {% endif %}
+                                <option value="Aucun" selected>Simple Fonctionnaire (Aucun accès)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Mot de passe temporaire</label>
+                            <input type="text" name="password" id="input-password" class="form-control border-danger" placeholder="Pas de mot de passe requis" disabled>
+                            <div class="form-text" id="password-help">Les simples fonctionnaires ne se connectent pas.</div>
+                        </div>
+                    </div>
+
+                    <script>
+                    function gererMotDePasse() {
+                        var role = document.getElementById('select-role').value;
+                        var pwd = document.getElementById('input-password');
+                        var help = document.getElementById('password-help');
+                        
+                        if (role === 'Aucun') {
+                            pwd.disabled = true;
+                            pwd.required = false;
+                            pwd.value = "";
+                            pwd.placeholder = "Pas de mot de passe requis";
+                            help.innerText = "Les simples fonctionnaires ne se connectent pas.";
+                        } else {
+                            pwd.disabled = false;
+                            pwd.required = true;
+                            pwd.placeholder = "À communiquer à l'agent";
+                            help.innerText = "Requis pour la connexion de cet utilisateur.";
+                        }
+                    }
+                    // On lance la fonction au chargement pour bien griser la case par défaut
+                    document.addEventListener("DOMContentLoaded", gererMotDePasse);
+                    </script>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <a href="{{ url_for('gestion_utilisateurs') }}" class="btn btn-outline-secondary me-2">Annuler</a>
+                        <button type="submit" class="btn btn-success fw-bold"><i class="fas fa-save me-2"></i>Enregistrer l'utilisateur</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

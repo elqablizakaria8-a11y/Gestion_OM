@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}Gestion du Parc Auto{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+    <h2 class="text-theme-primary"><i class="fas fa-car text-warning me-2"></i>Espace Chef de Parc</h2>
+</div>
+
+<div class="card shadow-sm border-0 mb-5" style="border-top: 4px solid var(--logo-secondary) !important;">
+    <div class="card-header bg-white pt-3 pb-2">
+        <h5 class="mb-0 fw-bold">Missions en attente de départ ({{ missions|length }})</h5>
+    </div>
+    <div class="card-body">
+        {% if missions %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>N° OM</th>
+                        <th>Fonctionnaire</th>
+                        <th>Destination</th>
+                        <th>Date de départ</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mission in missions %}
+                    <tr>
+                        <td class="fw-bold text-primary">{{ mission.numero_om }}</td>
+                        <td>{{ mission.nom }} {{ mission.prenom }}</td>
+                        <td>{{ mission.destination }}</td>
+                        <td>{{ mission.date_depart }}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm text-dark fw-bold" data-bs-toggle="collapse" data-bs-target="#assigner-{{ mission.id_om }}">Assigner</button>
+                        </td>
+                    </tr>
+                    <tr class="collapse" id="assigner-{{ mission.id_om }}">
+                        <td colspan="5" class="bg-light p-3 border-bottom">
+                            <form action="{{ url_for('valider_depart') }}" method="POST" class="row g-3 align-items-end mb-3">
+                                <input type="hidden" name="id_om" value="{{ mission.id_om }}">
+                                
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold small text-muted">Transport :</label>
+                                    <select name="moyen_transport" class="form-select border-primary transport-select" onchange="gererTransport(this)" required>
+                                        <option value="Véhicule de service" selected>Véhicule de service</option>
+                                        <option value="CTM">CTM (Transport public)</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-7 d-flex gap-2 zone-vehicule">
+                                    <div class="flex-grow-1">
+                                        <label class="form-label fw-bold small text-muted">Véhicule :</label>
+                                        <select name="id_vehicule" class="form-select border-warning select-vehicule" required onchange="verifierNouveau(this)">
+                                            <option value="" disabled selected>Sélectionner...</option>
+                                            {% for voiture in vehicules %}
+                                                <option value="{{ voiture.id_vehicule }}">{{ voiture.matricule }}</option>
+                                            {% endfor %}
+                                            <option value="nouveau" class="fw-bold text-primary">+ Nouveau véhicule</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="d-none champ-nouveau flex-grow-1">
+                                        <label class="form-label fw-bold small text-primary">Nouveau Matricule :</label>
+                                        <input type="text" name="nouveau_matricule" class="form-control border-primary" placeholder="Ex: 12345-A-50">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-success w-100 fw-bold">Valider</button>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info mb-0 text-center">Aucun départ en attente de véhicule pour le moment.</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- <div class="card shadow-sm border-0" style="border-top: 4px solid #198754 !important;">
+    <div class="card-header bg-white pt-3 pb-2">
+        <h5 class="mb-0 fw-bold">Véhicules sur la route ({{ missions_en_cours|length }})</h5>
+    </div>
+    <div class="card-body">
+        {% if missions_en_cours %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>N° OM</th>
+                        <th>Destination</th>
+                        <th>Véhicule Assigné</th>
+                        <th>Km Départ</th>
+                        <th>Saisir le Retour</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mission in missions_en_cours %}
+                    <tr>
+                        <td class="fw-bold text-success">{{ mission.numero_om }}</td>
+                        <td>{{ mission.destination }}</td>
+                        <td><span class="badge bg-secondary fs-6">{{ mission.matricule }}</span></td>
+                       <td class="text-muted">{{ mission.km_depart }} km</td>
+                        <td>
+                            <form action="{{ url_for('valider_retour') }}" method="POST" class="d-flex align-items-center">
+                                <input type="hidden" name="id_om" value="{{ mission.id_om }}">
+                                <button type="submit" class="btn btn-success fw-bold">Valider</button>
+                               <input type="number" name="km_retour" class="form-control border-success me-2" placeholder="Km au retour..." style="width: 150px;" required>
+                                
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-success mb-0 text-center">Tous les véhicules sont actuellement garés au parking de la Direction.</div>
+        {% endif %}
+    </div>
+</div> -->
+<script>
+function verifierNouveau(selectElement) {
+    const parentRow = selectElement.closest('.zone-vehicule');
+    const champNouveau = parentRow.querySelector('.champ-nouveau');
+    const inputNouveau = champNouveau.querySelector('input');
+
+    if (selectElement.value === "nouveau") {
+        champNouveau.classList.remove('d-none');
+        inputNouveau.required = true;
+    } else {
+        champNouveau.classList.add('d-none');
+        inputNouveau.required = false;
+    }
+}
+
+function gererTransport(selectElement) {
+    const parentForm = selectElement.closest('form');
+    const zoneVehicule = parentForm.querySelector('.zone-vehicule');
+    const selectVehicule = zoneVehicule.querySelector('.select-vehicule');
+
+    if (selectElement.value === 'CTM') {
+        // On cache le bloc véhicule
+        zoneVehicule.classList.add('d-none');
+        selectVehicule.required = false;
+    } else {
+        // On affiche le bloc véhicule
+        zoneVehicule.classList.remove('d-none');
+        selectVehicule.required = true;
+    }
+}
+</script>
+{% endblock %}

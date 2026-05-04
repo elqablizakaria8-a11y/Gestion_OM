@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>État des Frais de Déplacement - {{ employe.nom }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 30px;
+            font-size: 8pt;
+            color: #000;
+        }
+        /* En-tête */
+        .header-top { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start;
+            margin-bottom: 30px; 
+            font-size: 8pt; 
+        }
+        .ministere { 
+            width: 45%; 
+            text-align: center; 
+            font-weight: bold; 
+            line-height: 1.3;
+        }
+        .exercice-box { 
+            width: 50%; 
+            border: 1px solid #000; 
+            padding: 8px 12px; 
+            text-align: left; 
+            font-size: 8pt; /* Taille légèrement réduite pour tout faire rentrer */
+            line-height: 1.4;
+            border-radius: 4px;
+        }
+        .exercice-box div { margin-bottom: 2px; }
+        
+        /* Titre */
+        .main-title { text-align: center; border: 2px solid #000; padding: 10px; font-weight: bold; font-size: 14pt; margin-bottom: 30px; background-color: #f9f9f9; }
+        
+        /* Informations Employé */
+        .info-grid { display: grid; grid-template-columns: 150px 1fr; row-gap: 8px; margin-bottom: 20px; }
+        .info-label { font-weight: bold; }
+        .info-value { border-bottom: none; }
+        
+        /* Grand Tableau */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 8pt; text-align: center; }
+        th, td { border: 1px solid #000; padding: 8px; }
+        th { background-color: #f0f0f0; font-weight: bold; }
+        .text-left { text-align: left; }
+        .text-right { text-align: right; }
+        .bold { font-weight: bold;}
+        
+        /* Signatures */
+        .signatures { display: flex; justify-content: space-between; margin-top: 10px; font-size: 8pt; }
+        .sign-box { width: 45%; }
+        
+        /* Bouton Impression */
+        .print-btn { display: block; width: 250px; margin: 20px auto; padding: 10px; background: #0d6efd; color: white; text-align: center; text-decoration: none; font-weight: bold; border-radius: 5px; cursor: pointer; border: none; }
+        
+        /* --- RÈGLES D'IMPRESSION --- */
+        @media print {
+            @page { 
+                size: A4 portrait; /* Format Paysage */
+                margin: 0; /* MAGIQUE : Supprime les URLs, dates et numéros de page du navigateur ! */
+            }
+            body { 
+                margin: 0;
+                padding: 1cm; /* On remet une marge physique pour l'imprimante */
+                box-sizing: border-box;
+            }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="print-btn no-print" onclick="window.print()">🖨️ Imprimer l'État des Frais</button>
+
+    <div class="header-top">
+        <div class="ministere">
+            ROYAUME DU MAROC<br>
+            MINISTERE DE L'EDUCATION NATIONALE<br>
+            DU PRESCOLAIRE ET DES SPORTS<br>
+            ACADEMIE REGIONALE DE L'EDUCATION<br>
+            ET DE LA FORMATION<br>
+            REGION DARAA TAFILALET<br>
+            DIRECTION DE OUARZAZATE
+        </div>
+        
+        <div class="exercice-box">
+            <div>Pièce n° .....................</div>
+            <div><strong>EXERCICE : <span id="annee-exercice"></span></strong></div>
+            <div>Chapitre: 5213011026 Matériel et Dépenses divers</div>
+            <div>Article: 900 Gouvernance du système et mobilisation des acteurs</div>
+            <div>Paragraphe 10: Amélioration de la gouvernance et institutionnalisation du cadre contractuel</div>
+            <div>Ligne : 62</div>
+            <div>Rubrique: Indemnité de déplacement et changement de résidence à l'intérieur du Royaume</div>
+            <div>Objet: Indemnité de déplacement au profit du personnels de la direction provinciale</div>
+        </div>
+    </div>
+
+    <div class="main-title">ÉTAT DES SOMMES DUES POUR FRAIS DE DÉPLACEMENT</div>
+
+    <div class="info-grid">
+        <div class="info-label">Présenté par :</div>
+        <div class="info-value bold">{{ employe.nom }} {{ employe.prenom }}</div>
+        
+        <div class="info-label">DOTI & Grade :</div>
+        <div class="info-value">DOTI: <strong>{{ employe.doti }}</strong> &nbsp;&nbsp;|&nbsp;&nbsp; Grade: <strong>{{ employe.grade }} (Echelle {{ employe.echelle }}</strong>)</div>
+
+        <div class="info-label"> Établissement :</div>
+        <div class="info-value bold">Direction MEN de ouarzazate </div>
+
+        <div class="info-label">Coordonnées :</div>
+        <div class="info-value">Banque: <strong>{{ employe.banque | default('NON RENSEIGNÉ', true) }}</strong> &nbsp;&nbsp;|&nbsp;&nbsp; N° Compte: <strong>{{ employe.rib | default('NON RENSEIGNÉ', true) }}</strong></div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th colspan="2">Dates de déplacement</th>
+                <th rowspan="2">Indication précise du Parcours (Itinéraire)</th>
+                
+                <th rowspan="2">Objet de la mission</th>
+                
+                <th colspan="2">Heures</th>
+                <th rowspan="2">Moyen de transport</th>
+                <th rowspan="2">Nombre<br>de taux</th>
+                <th rowspan="2">Taux<br>de base</th>
+                <th rowspan="2">Montant<br>Indemnité (DH)</th>
+            </tr>
+            <tr>
+                <th>Départ</th>
+                <th>Retour</th>
+                <th>Départ</th>
+                <th>Arrivé</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mission in missions %}
+            <tr>
+                <td>{{ mission.date_depart }}</td>
+                <td>{{ mission.date_retour }}</td>
+                <td class="text-left">{{ mission.itineraire }}</td>
+                
+                <td>{{ mission.objet_mission }}</td>
+                
+                <td>{{ mission.heure_depart }}</td>
+                <td>{{ mission.heure_retour }}</td>
+                <td>{{ mission.moyen_transport }}</td>
+                <td>{{ mission.nombre_taux }}</td>
+                <td>{{ taux_base }}</td>
+                <td class="text-right bold">{{ mission.montant }}</td>
+            </tr>
+            {% endfor %}
+            
+            <tr>
+                <td colspan="7" class="text-right bold">TOTAUX :</td>
+                <td class="bold">{{ total_taux }}</td>
+                <td>{{ taux_base }}</td>
+                <td class="text-right bold">{{ total_montant }} DH</td>
+            </tr>
+        </tbody>
+    </table>
+
+   <p class="bold">Le présent mémoire est arrêté à la somme de : <span style="text-transform: uppercase; font-size: 10pt;">{{ montant_lettres }}</span> Dirhams.</p>
+
+    <div class="signatures">
+        <div class="sign-box">
+            <p>Certifie que les déplacements mentionnés au présent État ont eu lieu pour les besoins du service.</p><br>
+            A Ouarzazate le : ...............................<br><br>
+            <strong>Le Directeur Provincial</strong>
+        </div>
+       <div class="sign-box">
+            <p>Dressé par le soussigné, qui atteste n'avoir bénéficié d'aucune réduction de tarif sur les sommes dont il demande le remboursement, ni d'un logement en nature 
+                à quelque titre que ce soit et n'avoir pas utilisé un matériel de campement fourni par l'administration.</p><br>
+            A Ouarzazate le : ...............................<br><br>
+            <strong>Signature de l'intéressé ({{ employe.nom }})</strong>
+        </div>
+    </div>
+<script>
+        // Met l'année en cours automatiquement dans la case Exercice
+        document.getElementById('annee-exercice').innerText = new Date().getFullYear();
+    </script>
+</body>
+</html>
+</body>
+</html>

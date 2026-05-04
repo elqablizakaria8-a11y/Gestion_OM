@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% block title %}Consultation des Ordres de Mission{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+    <h2 class="text-theme-primary"><i class="fas fa-folder-open text-primary me-2"></i>Historique des Missions</h2>
+    <span class="badge bg-secondary fs-6">Total : {{ missions|length }} OM(s)</span>
+</div>
+
+<div class="card shadow-sm border-0" style="border-top: 4px solid var(--logo-primary) !important;">
+    <div class="card-body p-0">
+        
+        {% if missions %}
+        <div class="table-responsive">
+<div class="card mb-3 shadow-sm border-0 bg-light">
+    <div class="card-body py-2 px-3">
+        <form method="GET" action="{{ url_for('liste_om') }}" class="row g-2 align-items-center">
+            
+            <div class="col-auto text-muted fw-bold">
+                <i class="fas fa-filter"></i> Filtrer par :
+            </div>
+
+            <div class="col-md-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-secondary text-muted"><i class="fas fa-search"></i></span>
+                    
+                    <input type="text" id="rechercheNom" class="form-control border-secondary border-start-0" 
+                           placeholder="Recherche instantanée (Nom, destination, N°...)">
+                           
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <select   name="service" id="filtre-service" class="form-select form-select-sm border-secondary">
+                    <option value="">Tous les services</option>
+                    <option value="CPSI">CPSI (Centre Provincial du Système d'Information)</option>
+                                    <option value="Encadrement des Établissements et Orientation">Encadrement des Établissements et Orientation</option>
+                                    <option value="Affaires Pédagogiques">Affaires Pédagogiques</option>
+                                    <option value="Gestion des Ressources Humaines">Gestion des Ressources Humaines</option>
+                                    <option value="Planification et Carte Scolaire">Planification et Carte Scolaire</option>
+                                    <option value="Affaires Juridiques et Partenariats">Affaires Juridiques et Partenariats</option>
+                                    <option value="Constructions, Équipements et Patrimoine">Constructions, Équipements et Patrimoine</option>
+                                    <option value="Affaires Administratives">Affaires Administratives</option>
+                                    <option value="Centre Provincial des Examens">Centre Provincial des Examens</option>
+                                    
+                    </select>
+            </div>
+
+            <div class="col-md-2">
+                <select name="statut" id="filtre-statut" class="form-select form-select-sm border-secondary">
+                    <option value="">Tous les statuts</option>
+                    <option value="Terminée">Terminée</option>
+                    <option value="Attente Parc">Attente Parc</option>
+                </select>
+            </div>
+
+            <div class="col-auto ms-auto">
+                <!-- <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-search"></i></button> -->
+                <a href="{{ url_for('liste_om') }}" class="btn btn-sm btn-outline-secondary" title="Réinitialiser"><i class="fas fa-undo"></i>🔁</a>
+            </div>
+            
+        </form>
+    </div>
+</div>
+<table class="table table-hover align-middle">
+    <thead class="table-dark"> <tr>
+            <th>N° OM</th>
+            <th>Bénéficiaire</th>
+            <th>Service</th>
+            <th>Destination</th>
+            <th>Départ</th>
+            <th>Retour</th>
+            <th>Indemnités</th>
+            <th>Statut</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+<tbody id="tableMissions">
+            {% for mission in missions %}
+            <tr class="align-middle">
+                <td class="fw-bold text-primary">{{ mission.numero_om }}</td>
+                <td>{{ mission.nom }} {{ mission.prenom }}</td>
+                
+                <td class="service-cell text-muted">{{ mission.service_demandeur }}</td>
+                
+                <td>{{ mission.destination }}</td>
+                <td>{{ mission.date_depart }}</td>
+                <td>{{ mission.date_retour }}</td>
+                <td><span class="badge bg-secondary">{{ mission.nombre_taux }} Taux</span></td>
+                
+                <td class="statut-cell">
+                    <span class="badge {% if mission.statut == 'Terminée' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                        {{ mission.statut }}
+                    </span>
+                </td>
+                
+                <td class="text-nowrap">
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('imprimer_om', id_om=mission.id_om) }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-print"></i> Imprimer
+                        </a>
+                        <a href="{{ url_for('supprimer_om', id_om=mission.id_om) }}" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cet OM ?');">
+                            <i class="fas fa-trash"></i>🗑️
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        
+        </tbody> </table>
+<!-- <table class="table table-hover mt-3">
+        <thead class="table-light align-middle">
+                    <tr>
+                        <th>N° OM</th>
+                        <th>Bénéficiaire</th>
+                        
+                        <th style="min-width: 250px;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Service</span>
+                                <select id="filtre-service" class="form-select form-select-sm border-0 shadow-none bg-transparent fw-bold" style="width: auto; cursor: pointer;">
+                                    <option value="Tous">▼ Tous</option>
+                                    <option value="CPSI">CPSI (Centre Provincial du Système d'Information)</option>
+                                    <option value="Encadrement des Établissements et Orientation">Encadrement des Établissements et Orientation</option>
+                                    <option value="Affaires Pédagogiques">Affaires Pédagogiques</option>
+                                    <option value="Gestion des Ressources Humaines">Gestion des Ressources Humaines</option>
+                                    <option value="Planification et Carte Scolaire">Planification et Carte Scolaire</option>
+                                    <option value="Affaires Juridiques et Partenariats">Affaires Juridiques et Partenariats</option>
+                                    <option value="Constructions, Équipements et Patrimoine">Constructions, Équipements et Patrimoine</option>
+                                    <option value="Affaires Administratives">Affaires Administratives</option>
+                                    <option value="Centre Provincial des Examens">Centre Provincial des Examens</option>
+                                    </select>
+                            </div>
+                        </th>
+                        
+                        <th>Destination</th>
+                        <th>Départ</th>
+                        <th>Retour</th>
+                        <th>Indemnités</th>
+                        
+                        <th style="min-width: 150px;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Statut</span>
+                                <select id="filtre-statut" class="form-select form-select-sm border-0 shadow-none bg-transparent fw-bold" style="width: auto; cursor: pointer;">
+                                    <option value="Tous">▼ Tous</option>
+                                    <option value="En cours">En attente du Parc Auto</option>
+                                    <option value="Terminée">Terminée</option>
+                                </select>
+                            </div>
+                        </th>
+                        
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+        <tbody id="tableMissions">
+            {% for mission in missions %}
+            <tr class="align-middle">
+                <td class="fw-bold text-primary">{{ mission.numero_om }}</td>
+                <td>{{ mission.nom }}</td>
+                
+                <td class="service-cell text-muted">{{ mission.service_demandeur }}</td>
+                
+                <td>{{ mission.destination }}</td>
+                <td>{{ mission.date_depart }}</td>
+                <td>{{ mission.date_retour }}</td>
+                <td><span class="badge bg-secondary">{{ mission.nombre_taux }} Taux</span></td>
+                
+                <td class="statut-cell">
+                    <span class="badge {% if mission.statut == 'Terminée' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                        {{ mission.statut }}
+                    </span>
+                </td>
+                
+                <td class="text-nowrap">
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('imprimer_om', id_om=mission.id_om) }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-print"></i> Imprimer
+                        </a>
+                        <a href="{{ url_for('supprimer_om', id_om=mission.id_om) }}" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cet OM ?');">
+                            <i class="fas fa-trash"></i>🗑️
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        
+        </tbody> 
+    </table>   -->     
+</div>
+        {% else %}
+        <div class="p-5 text-center">
+            <i class="fas fa-folder-minus fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">Aucun Ordre de Mission trouvé.</h5>
+            <p class="text-muted small">Les missions apparaîtront ici une fois qu'elles auront été générées.</p>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. On récupère TOUS nos éléments de filtrage
+    const filtreService = document.getElementById('filtre-service');
+    const filtreStatut = document.getElementById('filtre-statut');
+    const inputRecherche = document.getElementById('rechercheNom'); // <-- La nouvelle barre de recherche
+
+    // 2. On récupère toutes les lignes du tableau (sauf l'en-tête)
+    const lignes = document.querySelectorAll("tbody tr");
+
+    // 3. Fonction qui cache ou affiche les lignes selon TOUS les critères
+    function filtrerTableau() {
+        // On récupère ce que l'utilisateur a choisi/tapé
+        const choixService = filtreService.value.toLowerCase();
+        const choixStatut = filtreStatut.value.toLowerCase();
+        const texteTape = inputRecherche.value.toLowerCase();
+
+        lignes.forEach(ligne => {
+            // On récupère le texte des cellules spécifiques pour les menus déroulants
+            // (Assure-toi que les index 2 et 7 correspondent bien à tes colonnes Service et Statut)
+            const texteService = ligne.cells[2] ? ligne.cells[2].textContent.toLowerCase() : "";
+            const texteStatut = ligne.cells[7] ? ligne.cells[7].textContent.toLowerCase() : "";
+            
+            // On récupère TOUT le texte de la ligne pour la barre de recherche libre
+            const texteLigne = ligne.textContent.toLowerCase();
+
+            // On vérifie chaque condition une par une
+            let correspondService = (choixService === "tous" || choixService === "" || texteService.includes(choixService));
+            let correspondStatut = (choixStatut === "tous" || choixStatut === "" || texteStatut.includes(choixStatut));
+            let correspondRecherche = texteLigne.includes(texteTape);
+
+            // Magie : La ligne ne s'affiche QUE si elle respecte les 3 filtres en même temps !
+            if (correspondService && correspondStatut && correspondRecherche) {
+                ligne.style.display = ""; // Affiche
+            } else {
+                ligne.style.display = "none"; // Cache
+            }
+        });
+    }
+
+    // 4. On écoute les actions de l'utilisateur pour déclencher le filtrage
+    filtreService.addEventListener("change", filtrerTableau);
+    filtreStatut.addEventListener("change", filtrerTableau);
+    inputRecherche.addEventListener("keyup", filtrerTableau); // Réagit à chaque lettre tapée
+});
+</script>
+{% endblock %}

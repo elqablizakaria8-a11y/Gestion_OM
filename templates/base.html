@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des OM - {% block title %}{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('dashboard') }}">
+                <img src="{{ url_for('static', filename='img/logo.jpeg') }}" 
+                     alt="Logo OM" 
+                     class="menu-logo rounded-circle shadow-sm">
+            </a>
+            <a class="navbar-brand fw-bold" href="{{ url_for('dashboard') }}"> Gestion Des Ordres De Missions</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    
+                    {% if session.get('loggedin') %}
+                        <li class="nav-item dropdown ms-2">
+                            <a class="nav-link dropdown-toggle bg-white text-primary fw-bold px-3 py-2 rounded-pill shadow-sm" href="#" id="profilDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle fa-lg me-1"></i> 
+                                {{ session.get('nom', 'Mon Profil') }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="profilDropdown">
+                                <li>
+                                    <a class="dropdown-item py-2 fw-semibold" href="#" data-bs-toggle="modal" data-bs-target="#modalPassword">
+                                        <i class="fas fa-key text-warning me-2"></i> Changer le mot de passe
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item py-2 fw-semibold text-danger" href="{{ url_for('logout') }}">
+                                        <i class="fas fa-sign-out-alt me-2"></i> Se déconnecter
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    
+                    {% endif %}
+                    
+                </ul>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+</div>
+
+{% block content %}
+{% endblock %}
+<div class="modal fade" id="modalPassword" tabindex="-1" aria-labelledby="modalPasswordLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <form action="{{ url_for('changer_password') }}" method="POST">
+                    
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="modalPasswordLabel"><i class="fas fa-key me-2"></i>Changer mon mot de passe</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-danger">Ancien mot de passe</label>
+                            <input type="password" name="ancien_mdp" class="form-control border-danger" placeholder="Entrez votre mot de passe actuel" required>
+                        </div>
+                        
+                        <hr class="text-muted my-4"> <div class="mb-3">
+                            <label class="form-label fw-bold text-muted">Nouveau mot de passe</label>
+                            <input type="password" name="nouveau_mdp" class="form-control" placeholder="Entrez le nouveau mot de passe" required minlength="4">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted">Confirmer le nouveau mot de passe</label>
+                            <input type="password" name="confirm_mdp" class="form-control" placeholder="Retapez le nouveau mot de passe" required minlength="4">
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary fw-bold">Enregistrer la modification</button>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/validation.js') }}"></script>
+</body>
+</html>

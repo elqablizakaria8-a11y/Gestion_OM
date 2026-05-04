@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ordre de Mission N° {{ mission.numero_om }}</title>
+    <style>
+        /* --- Styles Généraux pour l'impression --- */
+        html, body {
+            height: 100%; /* Important pour que le footer aille en bas */
+            margin: 0;
+        }
+        body { 
+            font-family: Arial, Helvetica, sans-serif; 
+            padding: 15px 40px; 
+            color: #000; 
+            font-size: 10.5pt; 
+            line-height: 1.4; 
+            box-sizing: border-box;
+            
+            /* NOUVEAU : Transformation du corps en Flexbox pour gérer la hauteur */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- En-tête (Ministère) --- */
+        .header { 
+            text-align: center; 
+            margin-bottom: 25px; 
+            font-weight: bold;
+            font-size: 9pt; 
+        }
+        .header img {
+            width: 60px; 
+            margin-bottom: 5px;
+        }
+        .header p { margin: 1px 0; }
+        
+        /* --- Bloc Titre (Ordre de Mission centré) --- */
+        .title-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;    
+            margin-bottom: 30px;
+        }
+        .main-title {
+            font-size: 20pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            margin-bottom: 15px; 
+            text-align: center;
+        }
+        .ref-box {
+            border: 1px solid #000; 
+            display: flex;
+            font-weight: bold;
+            font-size: 10pt;
+            width: 80%; 
+            justify-content: center; 
+        }
+        .ref-box div { padding: 6px 15px; }
+        .ref-box .num { 
+            border-right: 1px solid #000; 
+            background-color: #f4f4f4; 
+        }
+
+        /* --- Grille d'informations --- */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 180px 1fr; 
+            row-gap: 12px; 
+            margin-bottom: 20px;
+            align-items: baseline;
+        }
+        .label { font-weight: bold; }
+        .value { font-weight: bold; }
+        
+        .inline-group {
+            display: flex;
+            gap: 40px; 
+        }
+
+        /* --- Section des Dates et Heures --- */
+        .dates-section {
+            display: grid;
+            grid-template-columns: 120px 140px 60px 1fr; 
+            row-gap: 6px;
+            margin-left: 180px; 
+            margin-bottom: 20px;
+        }
+
+        /* --- Boîte pour le véhicule (Avec cases KM vides) --- */
+        .transport-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px; 
+        }
+        .transport-label { font-weight: bold; width: 180px; flex-shrink: 0; }
+        .transport-type { font-weight: bold; margin-right: 20px; white-space: nowrap; }
+        
+        .vehicule-box {
+            display: flex;
+            border: 1px solid #000; 
+            flex-grow: 1; 
+            max-width: 400px; /* Boîte agrandie pour faire rentrer les 3 cases */
+        }
+        .vehicule-box .v-col {
+            padding: 4px 10px;
+            flex: 1; 
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+            border-right: 1px solid #000; /* Remise de la séparation */
+        }
+        .vehicule-box .v-col:last-child {
+            border-right: none;
+        }
+        .v-col span { font-size: 8pt; font-weight: normal; margin-bottom: 2px; color: #555; }
+        .v-col strong { font-size: 10pt; min-height: 16px; }
+
+        /* --- Section Signatures --- */
+        .signature-section {
+            margin-top: 40px; 
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+        .signature-box { text-align: center; font-weight: bold; font-size: 11pt; }
+
+        /* --- Bas de page --- */
+        .footer {
+            /* NOUVEAU : Le margin-top "auto" pousse cet élément tout en bas du Flexbox */
+            margin-top: auto; 
+            text-align: center;
+            font-size: 8pt;
+            border-top: 1px solid #000;
+            padding-top: 5px;
+            font-weight: bold;
+        }
+
+        /* --- Bouton d'impression --- */
+        .print-btn-container { text-align: center; margin-bottom: 20px; }
+        .print-btn {
+            padding: 8px 20px; font-size: 12pt; font-weight: bold;
+            background-color: #0d6efd; color: white; border: none; border-radius: 5px; cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* --- RÈGLES D'IMPRESSION --- */
+        @media print {
+            @page { 
+                size: A4 portrait;
+                margin: 0; 
+            } 
+            body { 
+                padding: 1.5cm; /* Marge physique autour de la feuille */
+                height: 100vh; /* Utilise 100% de la hauteur du A4 */
+            } 
+            .no-print { display: none !important; }
+            .ref-box .num { background-color: transparent !important; -webkit-print-color-adjust: exact; }
+            .content-grid, .signature-section { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="print-btn-container no-print">
+        <button class="print-btn" onclick="window.print()">🖨️ Imprimer l'Ordre de Mission</button>
+    </div>
+
+    <div class="header">
+        <p>Royaume du Maroc</p>
+        <img src="../static/img/logo_royal.avif" alt="Armoiries du Maroc">
+        <p>Ministère de l'Education Nationale, du Préscolaire et des sports</p>
+        <p>Académie Régionale de l'Education et de la Formation de la région Drâa Tafilalet</p>
+        <p>Direction Provinciale de Ouarzazate</p>
+    </div>
+
+    <div class="title-section">
+        <div class="main-title">ORDRE DE MISSION</div>
+        <div class="ref-box">
+            <div class="num">{{ mission.numero_om }}</div>
+            <div class="service">Service : {{ mission.service_demandeur }}</div>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <div class="label">Il est ordonné à Mr/Mme :</div>
+        <div class="value" style="font-size: 12pt;">{{ mission.nom }} {{ mission.prenom }}</div>
+
+        <div class="label">DOTI :</div>
+        <div class="value inline-group">
+            <span>{{ mission.doti_employe }}</span>
+            <span><span class="label">CIN :</span> {{ mission.cin }}</span>
+        </div>
+
+        <div class="label">Grade :</div>
+        <div class="value">{{ mission.grade }} (Echelle {{ mission.echelle }})</div>
+
+        <div class="label">Fonction :</div>
+        <div class="value">{{ mission.grade }}</div>
+
+        <div class="label">Lieu d'Affectation :</div>
+        <div class="value">Direction Provinciale du MENPS Ouarzazate</div>
+        
+        <div style="grid-column: span 2; height: 5px;"></div>
+
+        <div class="label">De se Rendre à :</div>
+        <div class="value">{{ mission.destination }}</div>
+
+        <div class="label">Objet de la Mission :</div>
+        <div class="value">{{ mission.objet_mission }}</div>
+
+        <div class="label">Itinéraire :</div>
+        <div class="value">{{ mission.itineraire }}</div>
+    </div>
+
+    <div class="dates-section">
+        <div class="label">Date de Départ :</div>
+        <div class="value">{{ mission.date_depart }}</div>
+        <div class="label">Heure :</div>
+        <div class="value">{{ mission.heure_depart }}</div>
+
+        <div class="label">Date de Retour :</div>
+        <div class="value">{{ mission.date_retour }}</div>
+        <div class="label">Heure :</div>
+        <div class="value"></div>
+    </div>
+
+    <div class="transport-container">
+        <div class="transport-label">Moyen de Transport :</div>
+        
+        {% if mission.moyen_transport == 'CTM' %}
+            <div class="transport-type" style="font-size: 12pt;">CTM (Transport Public)</div>
+        {% else %}
+            <div class="transport-type">Voiture de service</div>
+            
+            <div class="vehicule-box">
+                <div class="v-col">
+                    <span>Matricule</span>
+                    <strong>{{ mission.matricule if mission.matricule else '' }}</strong>
+                </div>
+                <div class="v-col">
+                    <span>Km départ</span>
+                    <strong>&nbsp;</strong>
+                </div>
+                <div class="v-col">
+                    <span>Km retour</span>
+                    <strong>&nbsp;</strong>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="content-grid" style="margin-top: -5px; margin-bottom: 0;">
+        <div class="label">Accompagné de :</div>
+        <div class="value">{{ mission.accompagne_de }}</div>
+    </div>
+
+    <div class="signature-section">
+        <div class="signature-box" style="text-align: left;">
+            A Ouarzazate le : {{ mission.date_creation }}<br><br> 
+            <img src="{{ qr_code }}" alt="QR Code d'authentification" style="width: 110px; height: 110px;"> 
+        
+        </div>
+        <div class="signature-box">
+            Le Directeur provincial <br>
+       </div>
+    </div>
+
+    <div class="footer">
+        Service des affaires administratives et financières<br>
+        PARC AUTO
+    </div>
+
+</body>
+</html>

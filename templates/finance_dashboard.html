@@ -1,0 +1,167 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fas fa-wallet text-primary"></i> Gestion des Remboursements</h2>
+
+    <ul class="nav nav-tabs" id="financeTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-bold text-danger" id="attente-tab" data-bs-toggle="tab" data-bs-target="#attente" type="button" role="tab">
+                En attente de paiement 
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold text-success" id="paye-tab" data-bs-toggle="tab" data-bs-target="#paye" type="button" role="tab">
+                Historique des paiements
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content border border-top-0 bg-white p-3 rounded-bottom shadow-sm" id="financeTabContent">
+        
+        <div class="tab-pane fade show active" id="attente" role="tabpanel">
+            <table class="table table-hover mt-3">
+                <thead class="table-light">
+                    <tr>
+                        <th>doti</th>
+                        <th>Bénéficiaire</th>
+                        <th>nb_missions</th>
+                        <th>Banque</th>
+                        <th>RIB</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for emp in employes %}
+                    <tr>
+                        <td class="fw-bold">{{ emp.doti }}</td>
+                        <td>{{ emp.nom }} {{ emp.prenom }}</td>
+                        <td>{{ emp.nb_missions }}</td>
+                        <td>{{ emp.banque }}</td>
+                        <td>{{ emp.rib }}</td>
+                        <td>
+                            <a href="{{ url_for('generer_etat_frais', doti=emp.doti, statut='Non payé') }}" class="btn btn-sm btn-outline-secondary" title="Générer État" target="_blank">
+                                <i class="fas fa-file-invoice-dollar"></i> Générer état
+                            </a>
+                            <a href="{{ url_for('marquer_paye_employe', doti=emp.doti) }}" class="btn btn-sm btn-success ms-1" onclick="return confirm('Confirmer le paiement de cet employé ?');">
+                                <i class="fas fa-check"></i> Payer
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6" class="text-center text-muted">Aucun remboursement en attente.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tab-pane fade" id="paye" role="tabpanel">
+            <table class="table table-hover mt-3">
+                <thead class="table-light">
+                    <tr>
+                        <th>doti</th>
+                        <th>Bénéficiaire</th>
+                        <th>nb_missions</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for emp in employes_payes %}
+                    <tr>
+                        <td class="fw-bold text-muted">{{ emp.doti }}</td>
+                        <td>{{ emp.nom }} {{ emp.prenom }}</td>
+                        <td>{{ emp.nb_missions }}</td>
+                        <td><span class="badge bg-success"><i class="fas fa-check-circle"></i> Payé</span></td>
+                        <td>
+                            <a href="{{ url_for('generer_etat_frais', doti=emp.doti, statut='Payé') }}" class="btn btn-sm btn-outline-secondary" title="Générer État" target="_blank">
+                                <i class="fas fa-file-invoice-dollar"></i> Générer état
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="text-center text-muted">Aucun historique disponible.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
+
+<!-- 
+
+{% block title %}Espace Service Financier{% endblock %}
+
+
+<div class="container-fluid mt-4">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-theme-primary fw-bold mb-0">
+                <i class="fas fa-file-invoice-dollar me-2"></i> État des Sommes Dues
+            </h2>
+            <p class="text-muted mt-1">Dossiers en attente de facturation et de paiement</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 border-top border-success border-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-users text-success me-2"></i> Fonctionnaire en attente de remboursement</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-secondary">
+                        <tr>
+                            <th class="ps-4">Fonctionnaire</th>
+                            <th>DOTI</th>
+                            <th>Grade</th>
+                            <th class="text-center">Missions à payer</th>
+                            <th class="text-center">Coordonnées Bancaires</th>
+                            <th class="text-end pe-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for emp in employes %}
+                        <tr>
+                            <td class="ps-4 fw-bold text-primary">{{ emp.nom }} {{ emp.prenom }}</td>
+                            <td>{{ emp.doti }}</td>
+                            <td><span class="text-muted small">{{ emp.grade }}</span></td>
+                            
+                            <td class="text-center">
+                                <span class="badge bg-warning text-dark rounded-pill fs-6 px-3 py-2 shadow-sm">
+                                    {{ emp.nb_missions }} mission(s)
+                                </span>
+                            </td>
+
+                            <td class="text-center">
+                                {% if emp.rib and emp.banque %}
+                                    <span class="text-success small"><i class="fas fa-check-circle"></i> {{ emp.banque }}</span>
+                                {% else %}
+                                    <span class="text-danger small"><i class="fas fa-exclamation-triangle"></i> RIB Manquant</span>
+                                {% endif %}
+                            </td>
+                            
+                            <td class="text-end pe-4">
+                                <a href="{{ url_for('generer_etat_frais', doti=emp.doti, statut='Non payé') }}" class="btn btn-success btn-sm fw-bold px-3">
+                                    <i class="fas fa-file-pdf me-1"></i> Générer l'État
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="fas fa-check-double fa-3x mb-3 text-success opacity-50"></i>
+                                <h5>Aucun dossier en attente</h5>
+                                <p>Toutes les missions terminées ont été facturées.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+-->

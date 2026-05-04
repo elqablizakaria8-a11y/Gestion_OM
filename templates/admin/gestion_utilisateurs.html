@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Utilisateurs{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+    <h2 class="text-theme-primary"><i class="fas fa-users-cog text-primary me-2"></i>Annuaire des Utilisateurs</h2>
+    
+    <a href="{{ url_for('ajouter_utilisateur') }}" class="btn btn-success fw-bold shadow-sm">
+        <i class="fas fa-user-plus me-2"></i>Ajouter un profil
+    </a>
+</div>
+
+<div class="card shadow-sm border-0" style="border-top: 4px solid #6c757d !important;">
+    <div class="card-body p-0">
+        
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">DOTI</th>
+                        <th>Nom & Prénom</th>
+                        <th>Service</th>
+                        <th>Grade</th>
+                        <th>Rôle Système</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in utilisateurs %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-secondary">{{ user.doti }}</td>
+                        <td class="fw-bold">{{ user.nom }} {{ user.prenom }}</td>
+                        <td>{{ user.service_affectation }}</td>
+                        <td class="small text-muted">{{ user.grade }}</td>
+                        
+                        <td>
+                            {% if user.role == 'Admin' %}
+                                <span class="badge bg-danger">Admin</span>
+                            {% elif user.role == 'Directeur' %}
+                                <span class="badge bg-dark">Directeur</span>
+                            {% elif user.role == 'Chef de service' %}
+                                <span class="badge bg-primary">Chef de Service</span>
+                            {% elif user.role == 'Chef de parc' %}
+                                <span class="badge bg-warning text-dark">Parc Auto</span>
+                            {% elif user.role == 'Financière' %}
+                                <span class="badge bg-success">Financière</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Fonctionnaire</span>
+                            {% endif %}
+                        </td>
+                        
+                       <td class="text-center pe-3">
+                            
+                            <a href="{{ url_for('modifier_utilisateur', doti=user.doti) }}" class="btn btn-sm btn-outline-primary" title="Modifier le profil">
+                                ✏️
+                            </a>
+
+                            {% if user.doti != session['doti'] %}
+                                <a href="{{ url_for('supprimer_utilisateur', doti=user.doti) }}" class="btn btn-sm btn-outline-danger ms-1" onclick="return confirm('Attention : Êtes-vous sûr de vouloir supprimer cet utilisateur du système ?');" title="Supprimer l'accès">
+                                    🗑️
+                                </a>
+                            {% else %}
+                                <button class="btn btn-sm btn-outline-secondary ms-1" disabled title="Action impossible sur votre propre compte">
+                                    🚫
+                                </button>
+                            {% endif %}
+
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
