@@ -2,3 +2,5 @@ Flask
 Flask-MySQLdb
 num2words
 qrcode
+python-dotenv
+mysql-connector-python

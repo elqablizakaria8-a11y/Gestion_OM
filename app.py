@@ -7,15 +7,20 @@ from num2words import num2words
 import qrcode
 import base64
 from io import BytesIO
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'une_cle_secrete_pour_la_session' # Indispensable pour utiliser "session" et "flash"
+app.secret_key = os.getenv('SECRET_KEY') # Indispensable pour utiliser "session" et "flash"
 # --- CONFIGURATION DE LA LIAISON DB ---
-app.config['MYSQL_HOST'] = '127.0.0.1'       # L'adresse du serveur (localhost)
-app.config['MYSQL_USER'] = 'root'            # L'utilisateur par défaut de XAMPP
-app.config['MYSQL_PASSWORD'] = ''            # Par défaut, pas de mot de passe sur XAMPP
-app.config['MYSQL_DB'] = 'gestion_om_db'     # LE NOM EXACT de votre base dans phpMyAdmin
-app.config['MYSQL_PORT'] = 3307              # Attention : mettez 3307 si vous l'avez changé !
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST')
+app.config['MYSQL_USER'] = os.getenv('MYSQL_USER')
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')
+app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
+app.config['MYSQL_PORT'] = int(os.getenv('MYSQL_PORT'))
+app.config['MYSQL_SSL_CA'] = os.getenv('MYSQL_SSL_CA')
 # ... (Ta configuration MySQL : HOST, USER, PASSWORD, DB, PORT) ...
 mysql = MySQL(app)
 # --- Calcul du taux de repas ---
@@ -969,4 +974,5 @@ def changer_password():
     return redirect(request.referrer or url_for('dashboard'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # On met le port 7860 pour Hugging Face
+    app.run(host='0.0.0.0', port=7860, debug=False)

@@ -1,0 +1,20 @@
+name: Sync to Hugging Face Space
+
+on:
+  push:
+    branches: [main] # L'action se déclenche à chaque fois que tu fais un push sur 'main'
+  workflow_dispatch:
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Push to Hugging Face
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN2 }}
+        # Remplacer TON_PSEUDO et NOM_DU_SPACE par tes vraies informations Hugging Face
+        run: git push --force https://zakaria-8:$HF_TOKEN@huggingface.co/spaces/zakaria-8/Gestion-OM-MENPS main
