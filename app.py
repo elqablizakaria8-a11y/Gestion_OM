@@ -22,6 +22,9 @@ app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
 app.config['MYSQL_PORT'] = int(os.getenv('MYSQL_PORT'))
 app.config['MYSQL_SSL_CA'] = os.getenv('MYSQL_SSL_CA')
 # ... (Ta configuration MySQL : HOST, USER, PASSWORD, DB, PORT) ...
+# --- CONFIGURATION DE SÉCURITÉ POUR HUGGING FACE (IFRAME) ---
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_SECURE'] = True
 mysql = MySQL(app)
 # --- Calcul du taux de repas ---
 def calculer_taux_repas(date_dep_str, heure_dep_str, date_ret_str, heure_ret_str):
