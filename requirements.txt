@@ -4,3 +4,4 @@ num2words
 qrcode
 python-dotenv
 mysql-connector-python
+Pillow
