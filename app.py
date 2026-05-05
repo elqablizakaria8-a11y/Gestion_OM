@@ -247,7 +247,7 @@ Départ le : {mission.get('date_depart', 'N/A')}"""
                                qr_code=qr_code_base64)
                                
     except Exception as e:
-        print("Erreur Impression OM :", e)
+        print(f"🚨 ERREUR CRITIQUE DANS IMPRIMER_OM : {str(e)}", flush=True)
         flash("Erreur lors de la génération du document.", "danger")
         return redirect(request.referrer or url_for('dashboard'))
     finally:
