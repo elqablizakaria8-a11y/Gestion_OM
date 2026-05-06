@@ -623,7 +623,7 @@ def creer_om():
         except Exception as e:
             mysql.connection.rollback()
             flash("Erreur lors de l'enregistrement.", "danger")
-            print("Erreur SQL :", e)
+            print(f"🚨 ERREUR CRITIQUE DANS créer OM : {str(e)}", flush=True)
         finally:
             cursor.close()
 
