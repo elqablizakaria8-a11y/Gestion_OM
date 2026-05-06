@@ -225,7 +225,7 @@ def imprimer_om(id_om):
 Document authentique généré électroniquement.
 Ordre de Mission N° : {mission.get('numero_om', 'N/A')}
 Bénéficiaire : {mission.get('nom', '')} {mission.get('prenom', '')}
-CIN : {mission.get('cin', 'N/A')}
+#CIN : {mission.get('cin', 'N/A')}
 Destination : {mission.get('itineraire', 'N/A')}
 Départ le : {mission.get('date_depart', 'N/A')}"""
 
