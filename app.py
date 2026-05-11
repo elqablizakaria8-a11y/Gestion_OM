@@ -386,7 +386,16 @@ def ajouter_utilisateur():
         rib = request.form.get('rib')
         role = request.form.get('role')
         password = request.form.get('password')
-
+        # Récupération des données du formulaire
+        
+        # 1. On supprime les espaces (au cas où l'utilisateur a fait un copier/coller avec des espaces)
+        if rib:
+            rib = rib.replace(" ", "")
+            
+        # 2. On vérifie si la longueur est de 24 et si ce ne sont QUE des chiffres
+        if not rib or not rib.isdigit() or len(rib) != 24:
+            flash("Erreur : Le RIB doit être composé de 24 chiffres exactement.", "danger")
+            return redirect(url_for('ajouter_utilisateur')) # Renvoie l'utilisateur vers la page précédente
         cursor = mysql.connection.cursor()
         try:
             # 1. Vérifier si le DOTI existe déjà
@@ -466,8 +475,15 @@ def modifier_utilisateur(doti):
         banque = request.form.get('banque')
         rib = request.form.get('rib')
         role = request.form.get('role')
-        nouveau_password = request.form.get('password')
-
+        nouveau_password = request.form.get('password')      
+        # 1. On supprime les espaces (au cas où l'utilisateur a fait un copier/coller avec des espaces)
+        if rib:
+            rib = rib.replace(" ", "")
+            
+        # 2. On vérifie si la longueur est de 24 et si ce ne sont QUE des chiffres
+        if not rib or not rib.isdigit() or len(rib) != 24:
+            flash("Erreur : Le RIB doit être composé de 24 chiffres exactement.", "danger")
+            return redirect(url_for('ajouter_utilisateur')) # Renvoie l'utilisateur vers la page précédente
         try:
             # A. Mise à jour de l'identité (Ça, ça ne change pas)
             cursor.execute("""
