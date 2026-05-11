@@ -33,7 +33,11 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-bold">Échelle</label>
-                            <input type="text" name="echelle" class="form-control" required>
+                           <select name="Echelle" class="form-select border-primary" required>
+                               <option value="HE" disabled selected>HE</option>
+                               <option value="11" disabled selected>11</option>
+                               <option value="10" disabled selected>10</option>
+                           </select>
                         </div>
 
                     </div>
@@ -41,7 +45,11 @@
                     <div class="row mb-4">
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Grade</label>
-                            <input type="text" name="grade" class="form-control" placeholder="Ex: Administrateur 2ème grade" required>
+                            <input type="text" name="grade" class="form-control" required>
+                        </div>
+                         <div class="col-md-6">
+                            <label class="form-label fw-bold">Fonction</label>
+                            <input type="text" name="fonction" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Service d'affectation</label>
