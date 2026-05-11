@@ -72,6 +72,7 @@
             <th>Départ</th>
             <th>Retour</th>
             <th>Indemnités</th>
+            <th>Confirmer Taux</th>
             <th>Statut</th>
             <th>Action</th>
         </tr>
@@ -88,7 +89,21 @@
                 <td>{{ mission.date_depart }}</td>
                 <td>{{ mission.date_retour }}</td>
                 <td><span class="badge bg-secondary">{{ mission.nombre_taux }} Taux</span></td>
-                
+                <td>
+                        <form action="{{ url_for('modifier_taux', id=mission.id_om) }}" method="POST" class="d-flex justify-content-center align-items-center">
+                            <input type="number" 
+                                name="nouveau_taux" 
+                                class="form-control form-control-sm text-center border-primary me-1" 
+                                value="{{ mission.nombre_taux }}" 
+                                style="width: 70px;" 
+                                min="0" 
+                                title="Modifier si le fonctionnaire est logé/nourri"
+                                required>
+                            <button type="submit" class="btn btn-sm btn-success" title="Valider la modification">
+                                OK
+                            </button>
+                        </form>
+                </td>
                 <td class="statut-cell">
                     <span class="badge {% if mission.statut == 'Terminée' %}bg-success{% else %}bg-warning text-dark{% endif %}">
                         {{ mission.statut }}

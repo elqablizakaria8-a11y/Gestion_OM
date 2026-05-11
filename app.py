@@ -647,7 +647,37 @@ def creer_om():
     return render_template('admin/form_om.html', 
                            services=services_disponibles, 
                            est_chef=est_chef)
+@app.route('/modifier_taux/<int:id>', methods=['POST'])
+def modifier_taux(id):
+    # --- 1. SÉCURITÉ : Vérifier si l'utilisateur est connecté ---
+    # (Adapte 'doti' ou 'role' selon ce que tu utilises dans tes autres routes pour vérifier la connexion)
+    if 'role' not in session: 
+        flash("Accès refusé. Veuillez vous connecter.", "danger")
+        return redirect(url_for('login')) # Remplace 'login' par le nom de ta route de connexion si besoin
 
+    # --- (Optionnel) SÉCURITÉ 2 : Restreindre selon le rôle ---
+    # Si tu veux que seuls l'Admin ou le Directeur puissent modifier le taux, décommente ces lignes :
+    # if session.get('role') not in ['Admin', 'Directeur']:
+    #     flash("Vous n'avez pas l'autorisation de modifier ce taux.", "danger")
+    #     return redirect(url_for('liste_om'))
+
+    # --- 2. TRAITEMENT DE LA MODIFICATION ---
+    nouveau_taux = request.form.get('nouveau_taux')
+    
+    if nouveau_taux and nouveau_taux.isdigit():
+        cursor = mysql.connection.cursor()
+        try:
+            # Mise à jour dans la base de données
+            cursor.execute("UPDATE ordre_mission SET nombre_taux = %s WHERE id = %s", (nouveau_taux, id))
+            mysql.connection.commit()
+            flash("Le nombre de taux a été mis à jour avec succès.", "success")
+        except Exception as e:
+            mysql.connection.rollback()
+            print(f"🚨 ERREUR DANS MODIFIER_TAUX : {str(e)}", flush=True)
+            flash("Erreur lors de la modification du taux.", "danger")
+            
+    # On redirige vers la page du tableau
+    return redirect(url_for('liste_om'))
 # ==========================================
 # ESPACE CHEF DE PARC : GESTION DES VÉHICULES
 # ==========================================
