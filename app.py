@@ -597,23 +597,34 @@ def creer_om():
         try:
             # === LE CALCUL MAGIQUE DU NUMÉRO OM ===
             # 1. On compte combien d'OM existent pour ce service, pour cette année
+# === LE CALCUL MAGIQUE DU NUMÉRO OM (CORRIGÉ) ===
+        # 1. On cherche le numéro le PLUS ÉLEVÉ (MAX) pour ce service et cette année
             cursor.execute("""
-                SELECT COUNT(id_om) as total 
-                FROM ordre_mission 
+                SELECT MAX(CAST(SUBSTRING_INDEX(numero_om, '/', 1) AS UNSIGNED)) as max_num
+                FROM ordre_mission
                 WHERE service_demandeur = %s AND YEAR(date_creation) = %s
             """, (service_demandeur, annee_en_cours))
             
             resultat = cursor.fetchone()
-            compteur_actuel = resultat['total']
             
-            # 2. Le prochain numéro est le total + 1
+            # Astuce pour éviter les erreurs si c'est le tout premier OM de l'année
+            # (Vérifie si resultat est un dictionnaire ou un tuple selon ta config)
+            if type(resultat) is dict:
+                valeur_max = resultat['max_num']
+            else:
+                valeur_max = resultat[0] if resultat else None
+
+            if valeur_max is not None:
+                compteur_actuel = int(valeur_max)
+            else:
+                compteur_actuel = 0  # Aucun OM n'existe encore pour ce service cette année
+                
+            # 2. Le prochain numéro est le maximum + 1
             prochain_numero = compteur_actuel + 1
             
             # 3. On crée la chaîne de caractères finale (Ex: "1/2026")
             numero_om_calcule = f"{prochain_numero}/{annee_en_cours}"
-            # Optionnel : Tu pourrais aussi faire f"{prochain_numero}/{service_demandeur}/{annee_en_cours}"
-
-            # === INSERTION DANS LA BASE ===
+                # === INSERTION DANS LA BASE ===
             # ... (récupération de tes autres variables : date_depart, heure_depart, etc.)
         
             # 1. On calcule le nombre de taux automatiquement

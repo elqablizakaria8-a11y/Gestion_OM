@@ -29,12 +29,12 @@
                                         <option value="{{ om.service_demandeur }}" disabled selected>{{ om.service_demandeur }}</option>
                                     {% endif %}
 
-                                    {% for s in services %}
+                                    <!-- {% for s in services %}
                                         <option value="{{ s }}" 
                                             {% if est_chef or services|length == 1 %} selected {% endif %}>
                                             {{ s }}
                                         </option>
-                                    {% endfor %}
+                                    {% endfor %} -->
                                 </select>
                                 
                                 {% if est_chef %}
