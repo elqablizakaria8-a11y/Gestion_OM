@@ -324,8 +324,8 @@ def supprimer_utilisateur(doti):
 
     cursor = mysql.connection.cursor()
     try:
-        # Sécurité : Un Chef de service ne peut pas supprimer un Admin ou un autre Chef
-        if session['role'] in ['Directeur','Admin','Chef de service']:
+# Sécurité : Un Chef de service ne peut pas supprimer un Admin ou un autre Chef
+        if session.get('role') == 'Chef de service':
             cursor.execute("SELECT role FROM compte_acces WHERE doti = %s", (doti,))
             user_role = cursor.fetchone()
             if user_role and user_role[0] in ['Admin', 'Directeur', 'Chef de service']:
