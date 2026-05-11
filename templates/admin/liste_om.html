@@ -112,8 +112,11 @@
                 
                 <td class="text-nowrap">
                     <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('modifier_om', id=mission.id_om) }}" class="btn btn-sm btn-warning mb-1" title="Modifier l'Ordre de Mission">
+                            <i class="fas fa-edit"></i> ✏️
+                        </a>
                         <a href="{{ url_for('imprimer_om', id_om=mission.id_om) }}" class="btn btn-sm btn-primary">
-                            <i class="fas fa-print"></i> Imprimer
+                            <i class="fas fa-print"></i> 🖨️
                         </a>
                         <a href="{{ url_for('supprimer_om', id_om=mission.id_om) }}" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cet OM ?');">
                             <i class="fas fa-trash"></i>🗑️

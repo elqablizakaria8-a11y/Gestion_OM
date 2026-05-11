@@ -678,6 +678,56 @@ def modifier_taux(id):
             
     # On redirige vers la page du tableau
     return redirect(url_for('liste_om'))
+@app.route('/modifier_om/<int:id>', methods=['GET', 'POST'])
+def modifier_om(id):
+    # Sécurité : Vérifier si connecté
+    if 'role' not in session:
+        flash("Accès refusé. Veuillez vous connecter.", "danger")
+        return redirect(url_for('login'))
+
+    cursor = mysql.connection.cursor()
+
+    if request.method == 'POST':
+        # 1. On récupère les nouvelles données tapées dans le formulaire
+        destination = request.form.get('destination')
+        objet_mission = request.form.get('objet_mission')
+        itineraire = request.form.get('itineraire')
+        date_depart = request.form.get('date_depart')
+        heure_depart = request.form.get('heure_depart')
+        date_retour = request.form.get('date_retour')
+        heure_retour = request.form.get('heure_retour')
+        moyen_transport = request.form.get('moyen_transport')
+        accompagne_de = request.form.get('accompagne_de')
+
+        try:
+            # 2. On met à jour la base de données
+            cursor.execute("""
+                UPDATE ordre_mission 
+                SET destination = %s, objet_mission = %s, itineraire = %s,
+                    date_depart = %s, heure_depart = %s, date_retour = %s, 
+                    heure_retour = %s, moyen_transport = %s, accompagne_de = %s
+                WHERE id_om = %s
+            """, (destination, objet_mission, itineraire, date_depart, heure_depart, 
+                  date_retour, heure_retour, moyen_transport, accompagne_de, id))
+            
+            mysql.connection.commit()
+            flash("L'Ordre de Mission a été modifié avec succès.", "success")
+            return redirect(url_for('liste_om'))
+            
+        except Exception as e:
+            mysql.connection.rollback()
+            print(f"🚨 ERREUR UPDATE OM : {str(e)}", flush=True)
+            flash("Erreur lors de la modification de l'OM.", "danger")
+
+    # Si c'est un GET (affichage de la page) : on récupère les infos actuelles de l'OM
+    cursor.execute("SELECT * FROM ordre_mission WHERE id_om = %s", (id,))
+    om = cursor.fetchone()
+    
+    if not om:
+        flash("Ordre de mission introuvable.", "danger")
+        return redirect(url_for('liste_om'))
+
+    return render_template('admin/modifier_om.html', om=om)
 # ==========================================
 # ESPACE CHEF DE PARC : GESTION DES VÉHICULES
 # ==========================================

@@ -1,0 +1,73 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-4">
+    <div class="card shadow border-warning">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0"><i class="fas fa-edit"></i> Modifier l'Ordre de Mission</h4>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('modifier_om', id=om.id) }}" method="POST">
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="destination" class="form-label fw-bold">Destination</label>
+                        <input type="text" name="destination" id="destination" class="form-control" value="{{ om.destination }}" required>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="itineraire" class="form-label fw-bold">Itinéraire</label>
+                        <input type="text" name="itineraire" id="itineraire" class="form-control" value="{{ om.itineraire }}" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="objet_mission" class="form-label fw-bold">Objet de la mission</label>
+                    <textarea name="objet_mission" id="objet_mission" class="form-control" rows="3" required>{{ om.objet_mission }}</textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="date_depart" class="form-label fw-bold">Date de départ</label>
+                        <input type="date" name="date_depart" id="date_depart" class="form-control" value="{{ om.date_depart }}" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="heure_depart" class="form-label fw-bold">Heure de départ</label>
+                        <input type="time" name="heure_depart" id="heure_depart" class="form-control" value="{{ om.heure_depart }}" required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label for="date_retour" class="form-label fw-bold">Date de retour</label>
+                        <input type="date" name="date_retour" id="date_retour" class="form-control" value="{{ om.date_retour }}" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="heure_retour" class="form-label fw-bold">Heure de retour</label>
+                        <input type="time" name="heure_retour" id="heure_retour" class="form-control" value="{{ om.heure_retour }}" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="moyen_transport" class="form-label fw-bold">Moyen de transport</label>
+                        <input type="text" name="moyen_transport" id="moyen_transport" class="form-control" value="{{ om.moyen_transport }}" required>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="accompagne_de" class="form-label fw-bold">Accompagné de</label>
+                        <input type="text" name="accompagne_de" id="accompagne_de" class="form-control" value="{{ om.accompagne_de }}">
+                        <div class="form-text">Laissez vide si l'agent voyage seul.</div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4">
+                    <a href="{{ url_for('liste_om') }}" class="btn btn-secondary me-2">
+                        <i class="fas fa-times"></i> Annuler
+                    </a>
+                    <button type="submit" class="btn btn-warning fw-bold text-dark">
+                        <i class="fas fa-save"></i> Enregistrer les modifications
+                    </button>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
