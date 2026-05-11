@@ -668,7 +668,7 @@ def modifier_taux(id):
         cursor = mysql.connection.cursor()
         try:
             # Mise à jour dans la base de données
-            cursor.execute("UPDATE ordre_mission SET nombre_taux = %s WHERE id = %s", (nouveau_taux, id))
+            cursor.execute("UPDATE ordre_mission SET nombre_taux = %s WHERE id_om = %s", (nouveau_taux, id))
             mysql.connection.commit()
             flash("Le nombre de taux a été mis à jour avec succès.", "success")
         except Exception as e:
