@@ -896,9 +896,9 @@ def generer_etat_frais(doti, statut):
         # On détermine le taux de base selon l'échelle/grade
         if 'HE' in echelle_employe or 'HORS' in echelle_employe:
             taux_base = 100
-        elif '1ER' in echelle_employe or 'PREMIER' in echelle_employe:
+        elif '11' in echelle_employe or 'PREMIER' in echelle_employe:
             taux_base = 80
-        elif '2EME' in echelle_employe or 'DEUX' in echelle_employe:
+        elif '10' in echelle_employe or 'DEUX' in echelle_employe:
             taux_base = 60
         else:
             taux_base = 60  # Valeur par défaut si le grade n'est pas reconnu        
