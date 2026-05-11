@@ -684,7 +684,19 @@ def modifier_om(id):
     if 'role' not in session:
         flash("Accès refusé. Veuillez vous connecter.", "danger")
         return redirect(url_for('login'))
-
+    tous_les_services = [
+       "CPSI (Centre Provincial du Système d'Information)",
+                                     "Encadrement des Établissements et Orientation",
+                                     "Affaires Pédagogiques", "Gestion des Ressources Humaines",
+                                       "Affaires Administratives et Financières", "Planification et Carte Scolaire",
+                                         "Centre Provincial des Examens", "Affaires Juridiques et Partenariats", 
+                                         "Constructions, Équipements et Patrimoine"]
+    if session['role'] in ['Admin', 'Directeur']:
+        services_disponibles = tous_les_services
+        est_chef = False
+    else:
+        services_disponibles = [session.get('service')]
+        est_chef = True
     cursor = mysql.connection.cursor()
 
     if request.method == 'POST':
@@ -731,7 +743,7 @@ def modifier_om(id):
     colonnes = [col[0] for col in cursor.description]
     om_dict = dict(zip(colonnes, row))
 
-    return render_template('admin/modifier_om.html', om=om_dict)
+    return render_template('admin/modifier_om.html', om=om_dict, services=services_disponibles, est_chef=est_chef)
 # ==========================================
 # ESPACE CHEF DE PARC : GESTION DES VÉHICULES
 # ==========================================
