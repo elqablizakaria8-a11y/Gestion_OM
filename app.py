@@ -474,7 +474,7 @@ def modifier_utilisateur(doti):
                 UPDATE utilisateur 
                 SET nom = %s, prenom = %s, cin = %s, echelle = %s, grade = %s, fonction = %s, service_affectation = %s, banque = %s, rib = %s
                 WHERE doti = %s
-            """, (nom, prenom, cin, echelle, grade,fonction service, banque, rib, doti))
+            """, (nom, prenom, cin, echelle, grade, fonction, service, banque, rib, doti))
 
             # B. La logique de transition des accès
             # On vérifie si l'utilisateur avait DÉJÀ un compte d'accès avant la modification
