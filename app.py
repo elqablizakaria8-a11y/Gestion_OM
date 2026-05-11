@@ -341,7 +341,7 @@ def supprimer_utilisateur(doti):
     except Exception as e:
         mysql.connection.rollback()
         flash("Erreur lors de la suppression.", "danger")
-        print("Erreur SQL :", e)
+        print(f"🚨 ERREUR CRITIQUE : {str(e)}", flush=True)
     finally:
         cursor.close()
 
