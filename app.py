@@ -204,7 +204,7 @@ def imprimer_om(id_om):
     try:
         # On récupère toutes les informations d'un coup (OM + Utilisateur + Véhicule)
         cursor.execute("""
-            SELECT om.*, u.nom, u.prenom, u.cin, u.grade, u.doti, v.matricule 
+            SELECT om.*, u.nom, u.prenom, u.cin, u.grade, u.fonction, u.doti, v.matricule 
             FROM ordre_mission om
             JOIN utilisateur u ON om.doti_employe = u.doti
             LEFT JOIN vehicule v ON om.id_vehicule = v.id_vehicule
@@ -380,6 +380,7 @@ def ajouter_utilisateur():
         cin = request.form.get('cin')
         echelle = request.form.get('echelle')
         grade = request.form.get('grade')
+        fonction = request.form.get('fonction')
         service = request.form.get('service_affectation')
         banque = request.form.get('banque')
         rib = request.form.get('rib')
@@ -396,9 +397,9 @@ def ajouter_utilisateur():
 
             # 2. TOUJOURS insérer l'identité (La personne physique)
             cursor.execute("""
-                INSERT INTO utilisateur (doti, nom, prenom, cin, echelle, grade, service_affectation, banque, rib) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (doti, nom, prenom, cin, echelle, grade, service, banque, rib))
+                INSERT INTO utilisateur (doti, nom, prenom, cin, echelle, grade, fonction, service_affectation, banque, rib) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (doti, nom, prenom, cin, echelle, grade, fonction, service, banque, rib))
 
             # 3. Insérer la sécurité UNIQUEMENT si ce n'est pas un simple fonctionnaire
             if role != "Aucun":
@@ -460,6 +461,7 @@ def modifier_utilisateur(doti):
         cin = request.form.get('cin')
         echelle = request.form.get('echelle')
         grade = request.form.get('grade')
+        fonction = request.form.get('fonction')
         service = request.form.get('service_affectation')
         banque = request.form.get('banque')
         rib = request.form.get('rib')
@@ -470,9 +472,9 @@ def modifier_utilisateur(doti):
             # A. Mise à jour de l'identité (Ça, ça ne change pas)
             cursor.execute("""
                 UPDATE utilisateur 
-                SET nom = %s, prenom = %s, cin = %s, echelle = %s, grade = %s, service_affectation = %s, banque = %s, rib = %s
+                SET nom = %s, prenom = %s, cin = %s, echelle = %s, grade = %s, fonction = %s, service_affectation = %s, banque = %s, rib = %s
                 WHERE doti = %s
-            """, (nom, prenom, cin, echelle, grade, service, banque, rib, doti))
+            """, (nom, prenom, cin, echelle, grade,fonction service, banque, rib, doti))
 
             # B. La logique de transition des accès
             # On vérifie si l'utilisateur avait DÉJÀ un compte d'accès avant la modification
