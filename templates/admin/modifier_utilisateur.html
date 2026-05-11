@@ -46,6 +46,10 @@
                             <input type="text" name="grade" class="form-control" value="{{ user.grade }}" required>
                         </div>
                         <div class="col-md-6">
+                            <label class="form-label fw-bold">Fonction</label>
+                            <input type="text" name="fonction" class="form-control" value="{{ user.fonction }}" required>
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label fw-bold">Service d'affectation</label>
                             <select name="service_affectation" class="form-select border-primary" required>
                                 {% for s in services %}
@@ -61,8 +65,8 @@
                             <input type="text" name="banque" class="form-control border-success" value="{{ user.banque if user.banque else '' }}">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">N° de Compte / RIB</label>
-                            <input type="text" name="rib" class="form-control border-success" value="{{ user.rib if user.rib else '' }}">
+                            <label class="form-label fw-bold">RIB</label>
+                            <input type="text" name="rib" class="form-control border-success" value="{{ user.rib if user.rib else '' }}" required inputmode='numeric' pattern='[0-9]{24}' maxlength='24' minlength='24' >
                         </div>
                     </div>
                     <h5 class="text-muted mb-3 border-bottom pb-2">Accès au Système</h5>
