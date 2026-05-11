@@ -26,7 +26,7 @@
                                 <label class="form-label fw-bold">Service Demandeur</label>
                                 <select name="service_demandeur" class="form-select border-primary" required>
                                     {% if not est_chef %}
-                                        <option value="" disabled selected>Choisir le service...</option>
+                                        <option value="{{ om.service_demandeur }}" disabled selected>{{ om.service_demandeur }}</option>
                                     {% endif %}
 
                                     {% for s in services %}
