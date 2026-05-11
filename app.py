@@ -720,7 +720,7 @@ def modifier_om(id):
             flash("Erreur lors de la modification de l'OM.", "danger")
 
   # Si c'est un GET (affichage de la page) : on récupère les infos actuelles de l'OM
-    cursor.execute("SELECT * FROM ordre_mission WHERE id = %s", (id,))
+    cursor.execute("SELECT * FROM ordre_mission WHERE id_om = %s", (id,))
     row = cursor.fetchone()
     
     if not row:
