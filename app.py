@@ -719,15 +719,19 @@ def modifier_om(id):
             print(f"🚨 ERREUR UPDATE OM : {str(e)}", flush=True)
             flash("Erreur lors de la modification de l'OM.", "danger")
 
-    # Si c'est un GET (affichage de la page) : on récupère les infos actuelles de l'OM
-    cursor.execute("SELECT * FROM ordre_mission WHERE id_om = %s", (id,))
-    om = cursor.fetchone()
+  # Si c'est un GET (affichage de la page) : on récupère les infos actuelles de l'OM
+    cursor.execute("SELECT * FROM ordre_mission WHERE id = %s", (id,))
+    row = cursor.fetchone()
     
-    if not om:
+    if not row:
         flash("Ordre de mission introuvable.", "danger")
         return redirect(url_for('liste_om'))
 
-    return render_template('admin/modifier_om.html', om=om)
+    # MAGIE PYTHON : On transforme le 'tuple' (liste) en dictionnaire grâce aux noms des colonnes
+    colonnes = [col[0] for col in cursor.description]
+    om_dict = dict(zip(colonnes, row))
+
+    return render_template('admin/modifier_om.html', om=om_dict)
 # ==========================================
 # ESPACE CHEF DE PARC : GESTION DES VÉHICULES
 # ==========================================
