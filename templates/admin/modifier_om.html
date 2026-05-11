@@ -1,72 +1,107 @@
-{% extends 'base.html' %} {% block content %}
-<div class="container mt-4">
-    <div class="card shadow border-warning">
-        <div class="card-header bg-warning text-dark">
-            <h4 class="mb-0"><i class="fas fa-edit"></i> Modifier l'Ordre de Mission</h4>
+{% extends "base.html" %}
+
+{% block title %}Créer un Ordre de Mission{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-lg-9">
+        
+        <div class="d-flex align-items-center mb-4">
+            <h2 class="text-theme-primary mb-0 me-3">📝 Modifier un Ordre de Mission</h2>
+            <span class="badge bg-warning text-dark">Document Officiel</span>
         </div>
-        <div class="card-body">
-            <form action="{{ url_for('modifier_om', id=om.id) }}" method="POST">
+
+        <div class="card shadow-lg border-0" style="border-top: 4px solid var(--logo-primary) !important;">
+            <div class="card-body p-4 p-md-5">
                 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="destination" class="form-label fw-bold">Destination</label>
-                        <input type="text" name="destination" id="destination" class="form-control" value="{{ om.destination }}" required>
-                    </div>
+                <form action="{{ url_for('modifier_om', id=om.id_om) }}" method="POST">
                     
-                    <div class="col-md-6 mb-3">
-                        <label for="itineraire" class="form-label fw-bold">Itinéraire</label>
-                        <input type="text" name="itineraire" id="itineraire" class="form-control" value="{{ om.itineraire }}" required>
-                    </div>
-                </div>
+                    <h5 class="fw-bold mb-3 text-muted border-bottom pb-2">1. Références de la demande</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">Numéro OM</label>
+                        <input type="text" class="form-control bg-light text-muted" value="{{ om.numero_om }}" readonly>
+                        </div>
+                        <div class="col-md-8 mb-3">
+                                <label class="form-label fw-bold">Service Demandeur</label>
+                                <select name="service_demandeur" class="form-select border-primary" required>
+                                    {% if not est_chef %}
+                                        <option value="" disabled selected>Choisir le service...</option>
+                                    {% endif %}
 
-                <div class="mb-3">
-                    <label for="objet_mission" class="form-label fw-bold">Objet de la mission</label>
-                    <textarea name="objet_mission" id="objet_mission" class="form-control" rows="3" required>{{ om.objet_mission }}</textarea>
-                </div>
+                                    {% for s in services %}
+                                        <option value="{{ s }}" 
+                                            {% if est_chef or services|length == 1 %} selected {% endif %}>
+                                            {{ s }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                
+                                {% if est_chef %}
+                                    <div class="form-text text-success">
+                                        <i class="fas fa-lock me-1"></i> Sélectionné par défaut pour votre service.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold text-primary">DOTI de fonctionnaire concerné </label>
+                            <input type="text" name="doti_employe" class="form-control bg-light border-primary" value="{{ om.doti_employe }}" required>
+                        </div>
+                    </div>
 
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <label for="date_depart" class="form-label fw-bold">Date de départ</label>
-                        <input type="date" name="date_depart" id="date_depart" class="form-control" value="{{ om.date_depart }}" required>
+                    <h5 class="fw-bold mb-3 text-muted border-bottom pb-2 mt-5">2. Objet et Parcours</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Destination </label>
+                            <input type="text" name="destination" class="form-control" value="{{ om.destination }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Itinéraire exact </label>
+                            <input type="text" name="itineraire" class="form-control" value="{{ om.itineraire }}" placeholder="Ex: Ouarzazate - Errachidia - Ouarzazate" required>
+                        </div>
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="heure_depart" class="form-label fw-bold">Heure de départ</label>
-                        <input type="time" name="heure_depart" id="heure_depart" class="form-control" value="{{ om.heure_depart }}" required>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Objet de la Mission </label>
+                        <input type="text" name="objet_mission" class="form-control" value="{{ om.objet_mission }}" required>
                     </div>
 
-                    <div class="col-md-3 mb-3">
-                        <label for="date_retour" class="form-label fw-bold">Date de retour</label>
-                        <input type="date" name="date_retour" id="date_retour" class="form-control" value="{{ om.date_retour }}" required>
+                    <h5 class="fw-bold mb-3 text-muted border-bottom pb-2 mt-5">3. Calendrier</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded bg-light">
+                                <label class="form-label fw-bold text-success">Départ </label>
+                                <input type="date" name="date_depart" class="form-control mb-2" value="{{ om.date_depart }}" required>
+                                <input type="time" name="heure_depart" class="form-control" value="{{ om.heure_depart }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded bg-light">
+                                <label class="form-label fw-bold text-danger">Retour </label>
+                                <input type="date" name="date_retour" class="form-control mb-2" value="{{ om.date_retour }}" required>
+                                <input type="time" name="heure_retour" class="form-control" value="{{ om.heure_retour }}">
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="heure_retour" class="form-label fw-bold">Heure de retour</label>
-                        <input type="time" name="heure_retour" id="heure_retour" class="form-control" value="{{ om.heure_retour }}" required>
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="moyen_transport" class="form-label fw-bold">Moyen de transport</label>
-                        <input type="text" name="moyen_transport" id="moyen_transport" class="form-control" value="{{ om.moyen_transport }}" required>
+                    <h5 class="fw-bold mb-3 text-muted border-bottom pb-2 mt-5">4. Logistique (Transport & Accompagnateurs)</h5>
+                    <div class="alert alert-warning shadow-sm border-warning mb-4">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Information :</strong> L'assignation du véhicule et sera géré automatiquement par le <strong>Chef de Parc</strong> une fois cet OM validé.
                     </div>
-                    
-                    <div class="col-md-6 mb-3">
-                        <label for="accompagne_de" class="form-label fw-bold">Accompagné de</label>
-                        <input type="text" name="accompagne_de" id="accompagne_de" class="form-control" value="{{ om.accompagne_de }}">
-                        <div class="form-text">Laissez vide si l'agent voyage seul.</div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Accompagné de :</label>
+                        <textarea name="accompagne_de" class="form-control" rows="2" placeholder="Ex: Deux élèves et un professeur...">{{ om.accompagne_de }}</textarea>
                     </div>
-                </div>
 
-                <div class="d-flex justify-content-end mt-4">
-                    <a href="{{ url_for('liste_om') }}" class="btn btn-secondary me-2">
-                        <i class="fas fa-times"></i> Annuler
-                    </a>
-                    <button type="submit" class="btn btn-warning fw-bold text-dark">
-                        <i class="fas fa-save"></i> Enregistrer les modifications
-                    </button>
-                </div>
-                
-            </form>
+                    <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Annuler</a>
+                        <button type="submit" class="btn btn-primary px-5 fw-bold shadow-sm">
+                            <i class="fas fa-paper-plane me-2"></i> Enregistrer les modifications
+                        </button>
+                    </div>
+
+                </form>
+            </div>
         </div>
     </div>
 </div>
