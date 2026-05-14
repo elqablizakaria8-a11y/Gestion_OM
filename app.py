@@ -476,7 +476,10 @@ def modifier_utilisateur(doti):
         banque = request.form.get('banque')
         rib = request.form.get('rib')
         role = request.form.get('role')
-        nouveau_password = request.form.get('password')      
+        nouveau_password = request.form.get('password') 
+        if nouveau_password:
+            nouveau_password = generate_password_hash(nouveau_password)
+             
         # 1. On supprime les espaces (au cas où l'utilisateur a fait un copier/coller avec des espaces)
         if rib:
             rib = rib.replace(" ", "")
@@ -853,47 +856,6 @@ def valider_depart():
         cursor.close()
 
     return redirect(url_for('gestion_parc'))
-# --- ACTION 2 : VALIDER LE RETOUR (Calcul des kilomètres) ---
-'''
-@app.route('/chef_parc/valider_retour', methods=['POST'])
-def valider_retour():
-    id_om = request.form.get('id_om')
-    km_retour_saisi = request.form.get('km_retour')
-
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    try:
-        # On récupère l'OM pour avoir le km_depart et l'id_vehicule
-        cursor.execute("SELECT km_depart, id_vehicule FROM ordre_mission WHERE id_om = %s", (id_om,))
-        mission = cursor.fetchone()
-
-        km_depart = int(mission['km_depart'])
-        km_retour = int(km_retour_saisi)
-        kilometrage_total = km_retour - km_depart
-
-        if kilometrage_total < 0:
-            flash("Erreur : Le km de retour ne peut pas être inférieur au km de départ !", "danger")
-            return redirect(url_for('gestion_parc'))
-
-        # On met à jour la mission : Finie + Kilométrage calculé
-        cursor.execute("""
-            UPDATE ordre_mission 
-            SET km_retour = %s, kilometrage = %s, statut = 'Mission Terminée' 
-            WHERE id_om = %s
-        """, (km_retour, kilometrage_total, id_om))
-
-        # La voiture revient au parking !
-        cursor.execute("UPDATE vehicule SET est_disponible = TRUE WHERE id_vehicule = %s", (mission['id_vehicule'],))
-
-        mysql.connection.commit()
-        flash(f"Retour validé ! Distance calculée : {kilometrage_total} Km.", "success")
-    except Exception as e:
-        mysql.connection.rollback()
-        flash("Erreur lors de la validation du retour.", "danger")
-    finally:
-        cursor.close()
-
-    return redirect(url_for('gestion_parc'))
-'''
 # ==========================================
 # ESPACE SERVICE FINANCIER
 # ==========================================
@@ -1073,7 +1035,7 @@ def changer_password():
         user = cursor.fetchone()
 
         # 2. On compare avec ce que l'utilisateur a tapé
-        if not user or user['mot_de_passe'] != ancien_mdp:
+        if not user or not check_password_hash(user['mot_de_passe'], ancien_mdp):
             flash("Erreur : L'ancien mot de passe est incorrect.", "danger")
             return redirect(request.referrer or url_for('dashboard'))
 
@@ -1083,11 +1045,12 @@ def changer_password():
             return redirect(request.referrer or url_for('dashboard'))
 
         # 4. Si tout est bon, on met à jour !
+        nouveau_mdp_hash=generate_password_hash(nouveau_mdp)
         cursor.execute("""
             UPDATE compte_acces 
             SET mot_de_passe = %s 
             WHERE doti = %s
-        """, (nouveau_mdp, doti_utilisateur))
+        """, (nouveau_mdp_hash, doti_utilisateur))
         
         mysql.connection.commit()
         flash("Votre mot de passe a été modifié avec succès !", "success")
