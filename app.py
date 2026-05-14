@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 import MySQLdb.cursors
 from datetime import date
 from datetime import datetime, timedelta
+from werkzeug.security import generate_password_hash, check_password_hash
 from num2words import num2words
 import qrcode
 import base64
@@ -93,15 +94,15 @@ def login():
         SELECT c.*, u.service_affectation, u.nom, u.prenom 
         FROM compte_acces c
         INNER JOIN utilisateur u ON c.doti = u.doti 
-        WHERE c.doti = %s AND c.mot_de_passe = %s
-    """, (username, password))
+        WHERE c.doti = %s 
+    """, (username,))
         user = cursor.fetchone()
     finally:
         cursor.close()
 
     # 3. Vérifier le résultat [cite: 63, 64, 67]
    # 3. Vérifier le résultat
-    if user:
+    if user and check_password_hash(user['mot_de_passe'], password):
         # Succès : Les informations sont correctes
         session['loggedin'] = True
         
@@ -387,7 +388,7 @@ def ajouter_utilisateur():
         role = request.form.get('role')
         password = request.form.get('password')
         # Récupération des données du formulaire
-        
+        password_hash= generate_password_hash(password) if password else None
         # 1. On supprime les espaces (au cas où l'utilisateur a fait un copier/coller avec des espaces)
         if rib:
             rib = rib.replace(" ", "")
@@ -415,7 +416,7 @@ def ajouter_utilisateur():
                 cursor.execute("""
                     INSERT INTO compte_acces (doti, mot_de_passe, role) 
                     VALUES (%s, %s, %s)
-                """, (doti, password, role))
+                """, (doti, password_hash, role))
 
             mysql.connection.commit()
             flash("Nouvel utilisateur ajouté avec succès.", "success")
