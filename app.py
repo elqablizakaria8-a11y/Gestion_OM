@@ -50,9 +50,9 @@ def calculer_taux_repas(date_dep_str, heure_dep_str, date_ret_str, heure_ret_str
             midi_debut = datetime.combine(jour_actuel, datetime.strptime("11:30", "%H:%M").time())
             midi_fin = datetime.combine(jour_actuel, datetime.strptime("14:00", "%H:%M").time())
             
-            # 3. Tranche du Soir (Dîner : 18h30 - 21h00)
-            soir_debut = datetime.combine(jour_actuel, datetime.strptime("18:30", "%H:%M").time())
-            soir_fin = datetime.combine(jour_actuel, datetime.strptime("21:00", "%H:%M").time())
+            # 3. Tranche du Soir (Dîner : 18h30 - 23h00)
+            soir_debut = datetime.combine(jour_actuel, datetime.strptime("19:00", "%H:%M").time())
+            soir_fin = datetime.combine(jour_actuel, datetime.strptime("23:00", "%H:%M").time())
 
             # --- LES VÉRIFICATIONS ---
             
@@ -725,17 +725,19 @@ def modifier_om(id):
         heure_retour = request.form.get('heure_retour')
         moyen_transport = request.form.get('moyen_transport')
         accompagne_de = request.form.get('accompagne_de')
-
+        if not heure_retour:
+            heure_retour = "23:00"
+        nombre_taux = calculer_taux_repas(date_depart, heure_depart, date_retour, heure_retour)
         try:
             # 2. On met à jour la base de données
             cursor.execute("""
                 UPDATE ordre_mission 
                 SET destination = %s, objet_mission = %s, itineraire = %s,
                     date_depart = %s, heure_depart = %s, date_retour = %s, 
-                    heure_retour = %s, moyen_transport = %s, accompagne_de = %s
+                    heure_retour = %s, moyen_transport = %s, accompagne_de = %s, nombre_taux = %s
                 WHERE id_om = %s
             """, (destination, objet_mission, itineraire, date_depart, heure_depart, 
-                  date_retour, heure_retour, moyen_transport, accompagne_de, id))
+                  date_retour, heure_retour, moyen_transport, accompagne_de, nombre_taux, id))
             
             mysql.connection.commit()
             flash("L'Ordre de Mission a été modifié avec succès.", "success")
