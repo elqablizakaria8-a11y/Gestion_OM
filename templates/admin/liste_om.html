@@ -115,8 +115,10 @@
                         <a href="{{ url_for('modifier_om', id=mission.id_om) }}" class="btn btn-sm btn-warning mb-1" title="Modifier l'Ordre de Mission">
                             <i class="fas fa-edit"></i> ✏️
                         </a>
-                        <a href="{{ url_for('imprimer_om', id_om=mission.id_om) }}" class="btn btn-sm btn-primary">
-                            <i class="fas fa-print"></i> 🖨️
+                        <a href="{{ url_for('imprimer_om', id_om=mission.id_om) if mission.statut == 'Terminée' else '#' }}" 
+                        class="btn btn-sm btn-primary mb-1 {% if mission.statut != 'Terminée' %}disabled{% endif %}" 
+                        title="{% if mission.statut == 'Terminée' %}Imprimer l'Ordre de Mission{% else %}Impression indisponible : L'OM n'est pas terminé{% endif %}">
+                            <i class="fas fa-print"></i>🖨️
                         </a>
                         <a href="{{ url_for('supprimer_om', id_om=mission.id_om) }}" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cet OM ?');">
                             <i class="fas fa-trash"></i>🗑️

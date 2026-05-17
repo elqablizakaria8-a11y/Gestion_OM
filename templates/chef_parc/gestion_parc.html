@@ -18,6 +18,7 @@
                     <tr>
                         <th>N° OM</th>
                         <th>Fonctionnaire</th>
+                        <th>Service d'affectation</th>
                         <th>Destination</th>
                         <th>Date de départ</th>
                         <th>Action</th>
@@ -28,6 +29,7 @@
                     <tr>
                         <td class="fw-bold text-primary">{{ mission.numero_om }}</td>
                         <td>{{ mission.nom }} {{ mission.prenom }}</td>
+                        <td>{{ mission.service_demandeur }}</td>
                         <td>{{ mission.destination }}</td>
                         <td>{{ mission.date_depart }}</td>
                         <td>
@@ -35,7 +37,7 @@
                         </td>
                     </tr>
                     <tr class="collapse" id="assigner-{{ mission.id_om }}">
-                        <td colspan="5" class="bg-light p-3 border-bottom">
+                        <td colspan="6" class="bg-light p-3 border-bottom">
                             <form action="{{ url_for('valider_depart') }}" method="POST" class="row g-3 align-items-end mb-3">
                                 <input type="hidden" name="id_om" value="{{ mission.id_om }}">
                                 

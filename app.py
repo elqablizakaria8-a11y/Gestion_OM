@@ -29,9 +29,9 @@ app.config['SESSION_COOKIE_SECURE'] = True
 mysql = MySQL(app)
 # --- Calcul du taux de repas ---
 def calculer_taux_repas(date_dep_str, heure_dep_str, date_ret_str, heure_ret_str):
-    if not heure_dep_str: heure_dep_str = "08:00"
-    if not heure_ret_str: heure_ret_str = "18:00"
-
+    if not heure_dep_str: heure_dep_str = "09:00"
+    if not heure_ret_str: heure_ret_str = "23:00"
+    
     try:
         format_date = "%Y-%m-%d %H:%M"
         depart = datetime.strptime(f"{date_dep_str} {heure_dep_str}", format_date)
@@ -55,9 +55,9 @@ def calculer_taux_repas(date_dep_str, heure_dep_str, date_ret_str, heure_ret_str
             soir_fin = datetime.combine(jour_actuel, datetime.strptime("21:00", "%H:%M").time())
 
             # --- LES VÉRIFICATIONS ---
-            # S'il part AVANT la fin de la tranche, et revient APRÈS le début de la tranche, il a droit au repas.
             
-            if depart <= matin_fin and retour >= matin_debut:
+            # MODIFICATION ICI : On vérifie que le jour actuel N'EST PAS le jour de départ (depart.date())
+            if jour_actuel != depart.date() and depart <= matin_fin and retour >= matin_debut:
                 nombre_repas += 1  # Ajout du petit-déjeuner
 
             if depart <= midi_fin and retour >= midi_debut:
@@ -74,7 +74,7 @@ def calculer_taux_repas(date_dep_str, heure_dep_str, date_ret_str, heure_ret_str
     except Exception as e:
         print("Erreur de calcul des taux :", e)
         return 0
-    # login :
+        # login :
 @app.route('/')
 def home():
     return render_template('login.html')
@@ -773,7 +773,7 @@ def gestion_parc():
 
     # 1. Les missions qui attendent une voiture
     cursor.execute("""
-        SELECT om.id_om, om.numero_om, om.destination, om.date_depart, u.nom, u.prenom 
+        SELECT om.id_om, om.numero_om, om.destination, om.service_demandeur, om.date_depart, u.nom, u.prenom 
         FROM ordre_mission om
         JOIN utilisateur u ON om.doti_employe = u.doti
         WHERE om.statut = 'Attente Parc'
