@@ -48,11 +48,11 @@ def calculer_taux_repas(date_dep_str, heure_dep_str, date_ret_str, heure_ret_str
 
             # 2. Tranche du Midi (Déjeuner : 11h30 - 14h00)
             midi_debut = datetime.combine(jour_actuel, datetime.strptime("11:30", "%H:%M").time())
-            midi_fin = datetime.combine(jour_actuel, datetime.strptime("14:00", "%H:%M").time())
+            midi_fin = datetime.combine(jour_actuel, datetime.strptime("20:00", "%H:%M").time())
             
             # 3. Tranche du Soir (Dîner : 18h30 - 23h00)
-            soir_debut = datetime.combine(jour_actuel, datetime.strptime("19:00", "%H:%M").time())
-            soir_fin = datetime.combine(jour_actuel, datetime.strptime("23:00", "%H:%M").time())
+            soir_debut = datetime.combine(jour_actuel, datetime.strptime("20:00", "%H:%M").time())
+            soir_fin = datetime.combine(jour_actuel, datetime.strptime("23:59", "%H:%M").time())
 
             # --- LES VÉRIFICATIONS ---
             
@@ -727,8 +727,11 @@ def modifier_om(id):
         accompagne_de = request.form.get('accompagne_de')
         if not heure_retour:
             heure_retour = "23:00"
-        nombre_taux = calculer_taux_repas(date_depart, heure_depart, date_retour, heure_retour)
+        if heure_depart: heure_depart = str(heure_depart)[:5]
+        if heure_retour: heure_retour = str(heure_retour)[:5]
+        
         try:
+            nombre_taux = calculer_taux_repas(date_depart, heure_depart, date_retour, heure_retour)
             # 2. On met à jour la base de données
             cursor.execute("""
                 UPDATE ordre_mission 
